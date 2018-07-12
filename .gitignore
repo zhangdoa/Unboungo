@@ -7,3 +7,15 @@
 build/
 
 .flutter-plugins
+
+android/local.properties
+android/build
+android/captures
+android/GeneratedPluginRegistrant.java
+*.iml
+*.class
+.gradle
+
+.idea/workspace.xml
+.idea/libraries
+
