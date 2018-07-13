@@ -16,6 +16,4 @@ android/GeneratedPluginRegistrant.java
 *.class
 .gradle
 
-.idea/workspace.xml
-.idea/libraries
-
+.idea/
