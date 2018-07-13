@@ -17,3 +17,4 @@ android/GeneratedPluginRegistrant.java
 .gradle
 
 .idea/
+android/app/google-services\.json
