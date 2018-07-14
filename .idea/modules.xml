@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/Unboungo.iml" filepath="$PROJECT_DIR$/.idea/Unboungo.iml" />
       <module fileurl="file://$PROJECT_DIR$/unboungo.iml" filepath="$PROJECT_DIR$/unboungo.iml" />
       <module fileurl="file://$PROJECT_DIR$/unboungo_android.iml" filepath="$PROJECT_DIR$/unboungo_android.iml" />
     </modules>

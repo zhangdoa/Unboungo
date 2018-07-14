@@ -9,38 +9,41 @@ class MainPage extends StatefulWidget {
   @override
   State createState() => new MainPageState();
 }
+
 class MainPageState extends State<MainPage> {
   PageController _pageController;
+  int _page = 0;
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
         title: "Unboungo",
-        theme: defaultTargetPlatform == TargetPlatform.iOS
-            ? kIOSTheme
-            : kDefaultTheme,
+        theme: kDefaultTheme,
         home: Scaffold(
             appBar: AppBar(
               title: Text('Unboungo'),
             ),
-            body:
-            new PageView(
-              children: [
-                new RecentChatPage(),
-                new FriendPage(),
-              ],
-            ),
-            bottomNavigationBar: BottomMenuBar()
-        ));
+            body: new PageView(children: [
+              new RecentChatPage(),
+              new FriendPage(),
+            ], controller: _pageController,
+                onPageChanged: onPageChanged),
+            bottomNavigationBar: new BottomNavigationBar(items: [
+              new BottomNavigationBarItem(
+                  icon: new Icon(Icons.chat_bubble), title: new Text("Recent")),
+              new BottomNavigationBarItem(
+                  icon: new Icon(Icons.contacts), title: new Text("Friends")),
+            ], onTap: navigationTapped, currentIndex: _page)));
   }
-  void navigationTapped(int page){
 
-    // Animating to the page.
-    // You can use whatever duration and curve you like
-    _pageController.animateToPage(
-        page,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.ease
-    );
+  void navigationTapped(int page) {
+    _pageController.animateToPage(page,
+        duration: const Duration(milliseconds: 200), curve: Curves.ease);
+  }
+
+  void onPageChanged(int page) {
+    setState(() {
+      this._page = page;
+    });
   }
 
   @override
@@ -50,39 +53,16 @@ class MainPageState extends State<MainPage> {
   }
 
   @override
-  void dispose(){
+  void dispose() {
     super.dispose();
     _pageController.dispose();
-  }
-}
-
-class BottomMenuBar extends StatefulWidget {
-  @override
-  State createState() => new BottomMenuBarState();
-}
-
-class BottomMenuBarState extends State<BottomMenuBar> with TickerProviderStateMixin {
-  @override
-  Widget build(BuildContext context) {
-    return new BottomNavigationBar(
-        items: [
-          new BottomNavigationBarItem(
-              icon: new Icon(Icons.chat_bubble),
-              title: new Text("Recent")
-          ),
-          new BottomNavigationBarItem(
-              icon: new Icon(Icons.contacts),
-              title: new Text("Friends")
-          ),
-        ],
-    );
   }
 }
 
 final ThemeData kIOSTheme = new ThemeData(
   primarySwatch: Colors.green,
   primaryColor: Colors.black12,
-  primaryColorBrightness: Brightness.light,
+  //primaryColorBrightness: Brightness.light,
   backgroundColor: Colors.white70,
 );
 

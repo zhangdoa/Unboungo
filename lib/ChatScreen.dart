@@ -11,7 +11,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text("Unboungo"),
+      appBar: new AppBar(title: new Text("M"),
         elevation:
         Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
       ),
@@ -95,7 +95,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     ChatMessage message = new ChatMessage(
       text: text,
       animationController: new AnimationController(
-        duration: new Duration(milliseconds: 700),
+        duration: new Duration(milliseconds: 200),
         vsync: this,
       ),
     );
@@ -108,7 +108,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController _textController = new TextEditingController();
   bool _isComposing = false;
 }
-const String _name = "Tigger";
+const String _name = "Me";
 class ChatMessage extends StatelessWidget {
   ChatMessage({this.text, this.animationController});
   final String text;
@@ -120,25 +120,24 @@ class ChatMessage extends StatelessWidget {
             parent: animationController, curve: Curves.easeOut),
         axisAlignment: 0.0,
         child: new Container(
-          margin: const EdgeInsets.symmetric(vertical: 10.0),
+          margin: const EdgeInsets.symmetric(vertical: 2.0),
           child: new Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              new Container(
-                margin: const EdgeInsets.only(right: 16.0),
-                child: new CircleAvatar(child: new Text(_name[0])),
-              ),
               new Expanded(
                 child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
                     new Text(_name, style: Theme.of(context).textTheme.subhead),
                     new Container(
-                      margin: const EdgeInsets.only(top: 5.0),
                       child: new Text(text),
                     ),
                   ],
                 ),
+              ),
+              new Container(
+                margin: const EdgeInsets.only(left: 8.0),
+                child: new CircleAvatar(child: new Text(_name[0])),
               ),
             ],
           ),

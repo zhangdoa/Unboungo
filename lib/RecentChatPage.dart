@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:english_words/english_words.dart';
 
-class RecentChatPage extends StatefulWidget{
+import 'package:unboungo/ChatScreen.dart';
+
+class RecentChatPage extends StatefulWidget {
   @override
   State createState() => new RecentChatPageState();
 }
@@ -15,11 +17,11 @@ class RecentChatPageState extends State<RecentChatPage> {
   }
 
   Widget _buildRecentChats() {
-      _recentChats.add(new RecentChat());
-      return ListView(
-        shrinkWrap: true,
-        children: _recentChats,
-        );
+    _recentChats.add(new RecentChat());
+    return ListView(
+      shrinkWrap: true,
+      children: _recentChats,
+    );
   }
 
   Widget _buildRow(RecentChat recentChat) {
@@ -36,20 +38,27 @@ class RecentChatPageState extends State<RecentChatPage> {
 }
 
 class RecentChat extends StatelessWidget {
-  final String _lastMessage = "Hello World";
-  final String _userName = "Tigger";
+  final String _lastMessage = "Eat less!!!";
+  final String _userName = "M";
   @override
   Widget build(BuildContext context) {
     return new Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: new Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           new Container(
-            margin: const EdgeInsets.only(right: 16.0),
+            margin: const EdgeInsets.only(left: 4.0, right: 4.0),
             child: new CircleAvatar(child: new Text(_userName[0])),
           ),
           new Expanded(
+              child: new GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatScreen()),
+              );
+            },
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -60,7 +69,7 @@ class RecentChat extends StatelessWidget {
                 ),
               ],
             ),
-          ),
+          )),
         ],
       ),
     );
