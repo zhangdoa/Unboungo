@@ -3,6 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
 class ChatScreen extends StatefulWidget {
+ final String title;
+  ChatScreen({
+    Key key,
+    this.title,
+  }) : super(key: key);
+
   @override
   State createState() => new ChatScreenState();
 }
@@ -11,9 +17,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text("M"),
-        elevation:
-        Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
+      appBar: new AppBar(
+        title: new Text(widget.title),
+        elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
       ),
       body: new Container(
           child: new Column(
@@ -28,26 +34,29 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               ),
               new Divider(height: 1.0),
               new Container(
-                decoration: new BoxDecoration(color: Theme.of(context).cardColor),
+                decoration:
+                    new BoxDecoration(color: Theme.of(context).cardColor),
                 child: _buildTextComposer(),
               ),
             ],
           ),
           decoration: Theme.of(context).platform == TargetPlatform.iOS
               ? new BoxDecoration(
-            border: new Border(
-              top: new BorderSide(color: Colors.grey[200]),
-            ),
-          )
+                  border: new Border(
+                    top: new BorderSide(color: Colors.grey[200]),
+                  ),
+                )
               : null),
     );
   }
+
   @override
   void dispose() {
     for (ChatMessage message in _messages)
       message.animationController.dispose();
     super.dispose();
   }
+
   Widget _buildTextComposer() {
     return new IconTheme(
       data: new IconThemeData(color: Theme.of(context).accentColor),
@@ -65,28 +74,30 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 },
                 onSubmitted: _handleSubmitted,
                 decoration:
-                new InputDecoration.collapsed(hintText: "Send a message"),
+                    new InputDecoration.collapsed(hintText: "Send a message"),
               ),
             ),
             new Container(
                 margin: new EdgeInsets.symmetric(horizontal: 4.0),
-                child: Theme.of(context).platform == TargetPlatform.iOS ?
-                new CupertinoButton(
-                  child: new Text("Send"),
-                  onPressed: _isComposing
-                      ? () =>  _handleSubmitted(_textController.text)
-                      : null,) :
-                new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: _isComposing ?
-                      () =>  _handleSubmitted(_textController.text) : null,
-                )
-            ),
+                child: Theme.of(context).platform == TargetPlatform.iOS
+                    ? new CupertinoButton(
+                        child: new Text("Send"),
+                        onPressed: _isComposing
+                            ? () => _handleSubmitted(_textController.text)
+                            : null,
+                      )
+                    : new IconButton(
+                        icon: new Icon(Icons.send),
+                        onPressed: _isComposing
+                            ? () => _handleSubmitted(_textController.text)
+                            : null,
+                      )),
           ],
         ),
       ),
     );
   }
+
   void _handleSubmitted(String text) {
     _textController.clear();
     setState(() {
@@ -104,11 +115,14 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
     message.animationController.forward();
   }
+
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = new TextEditingController();
   bool _isComposing = false;
 }
+
 const String _name = "Me";
+
 class ChatMessage extends StatelessWidget {
   ChatMessage({this.text, this.animationController});
   final String text;
@@ -141,7 +155,6 @@ class ChatMessage extends StatelessWidget {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 }
