@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:unboungo/MainPage.dart';
+import 'package:unboungo/MainScreen.dart';
+import 'package:unboungo/LogInScreen.dart';
 
 void main() {
   runApp(new UnboungoApp());
@@ -9,7 +10,8 @@ void main() {
 class UnboungoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MainPage();
+    //return new MainScreen();
+    return new LogInScreen();
   }
 }
 

@@ -5,12 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:unboungo/RecentChatPage.dart';
 import 'package:unboungo/FriendPage.dart';
 
-class MainPage extends StatefulWidget {
+import 'package:unboungo/Theme.dart';
+
+class MainScreen extends StatefulWidget {
   @override
-  State createState() => new MainPageState();
+  State createState() => new MainScreenState();
 }
 
-class MainPageState extends State<MainPage> {
+class MainScreenState extends State<MainScreen> {
   PageController _pageController;
   int _page = 0;
   @override
@@ -58,16 +60,3 @@ class MainPageState extends State<MainPage> {
     _pageController.dispose();
   }
 }
-
-final ThemeData kIOSTheme = new ThemeData(
-  primarySwatch: Colors.green,
-  primaryColor: Colors.black12,
-  //primaryColorBrightness: Brightness.light,
-  backgroundColor: Colors.white70,
-);
-
-final ThemeData kDefaultTheme = new ThemeData(
-  primarySwatch: Colors.green,
-  accentColor: Colors.black12,
-  backgroundColor: Colors.white70,
-);
