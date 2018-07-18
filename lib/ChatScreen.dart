@@ -7,7 +7,7 @@ class ChatScreen extends StatefulWidget {
   ChatScreen({
     Key key,
     this.title,
-  }) : super(key: key);
+  }) : super(key: key);..
 
   @override
   State createState() => new ChatScreenState();

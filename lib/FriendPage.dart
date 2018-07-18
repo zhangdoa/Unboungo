@@ -79,7 +79,7 @@ class FriendWidget extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatScreen()),
+              MaterialPageRoute(builder: (context) => ChatScreen(title: _friendFullName)),
             );
           },
           child: Row(
