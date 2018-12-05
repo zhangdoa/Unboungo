@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:english_words/english_words.dart';
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:unboungo/ChatScreen.dart';
 
 class RecentChatPage extends StatefulWidget {
@@ -38,6 +39,8 @@ class RecentChatPageState extends State<RecentChatPage> {
 }
 
 class RecentChat extends StatelessWidget {
+  final reference = FirebaseDatabase.instance.reference().child('messages');
+
   final String _lastMessage = "Eat less!!!";
   final String _userName = "M";
   @override
@@ -56,7 +59,7 @@ class RecentChat extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ChatScreen()),
+                MaterialPageRoute(builder: (context) => ChatScreen(title : _userName)),
               );
             },
             child: new Column(

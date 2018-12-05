@@ -2,18 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:unboungo/Model.dart';
+
 class ChatScreen extends StatefulWidget {
  final String title;
   ChatScreen({
     Key key,
     this.title,
-  }) : super(key: key);..
+  }) : super(key: key);
 
   @override
   State createState() => new ChatScreenState();
 }
 
 class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
+  final reference = FirebaseDatabase.instance.reference().child('messages');
+  String _userFullName = UserData.fullName;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -114,6 +123,14 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       _messages.insert(0, message);
     });
     message.animationController.forward();
+    _sendMessage(text : text);
+  }
+
+  void _sendMessage({ String text, String imageUrl }) {
+    reference.push().set({
+      'text': text,
+      'senderName': _userFullName,
+    });
   }
 
   final List<ChatMessage> _messages = <ChatMessage>[];
@@ -121,12 +138,12 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _isComposing = false;
 }
 
-const String _name = "Me";
-
 class ChatMessage extends StatelessWidget {
   ChatMessage({this.text, this.animationController});
   final String text;
   final AnimationController animationController;
+  String _userFullName = UserData.fullName;
+
   @override
   Widget build(BuildContext context) {
     return new SizeTransition(
@@ -142,7 +159,7 @@ class ChatMessage extends StatelessWidget {
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
-                    new Text(_name, style: Theme.of(context).textTheme.subhead),
+                    new Text(_userFullName, style: Theme.of(context).textTheme.subhead),
                     new Container(
                       child: new Text(text),
                     ),
@@ -151,7 +168,7 @@ class ChatMessage extends StatelessWidget {
               ),
               new Container(
                 margin: const EdgeInsets.only(left: 8.0),
-                child: new CircleAvatar(child: new Text(_name[0])),
+                child: new CircleAvatar(child: new Text(_userFullName[0])),
               ),
             ],
           ),

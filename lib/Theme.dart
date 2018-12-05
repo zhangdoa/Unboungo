@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 final ThemeData kIOSTheme = new ThemeData(
   primarySwatch: Colors.green,
   primaryColor: Colors.black12,
-  //primaryColorBrightness: Brightness.light,
   backgroundColor: Colors.white70,
 );
 

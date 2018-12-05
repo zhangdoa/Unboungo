@@ -7,12 +7,13 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:unboungo/MainScreen.dart';
+
+import 'package:unboungo/Model.dart';
+
+import 'package:unboungo/Theme.dart';
 
 class LogInPage extends StatefulWidget {
   @override
@@ -23,36 +24,54 @@ class LogInPageState extends State<LogInPage> {
   final googleSignIn = new GoogleSignIn();
   final analytics = new FirebaseAnalytics();
   final auth = FirebaseAuth.instance;
-  final reference = FirebaseDatabase.instance.reference().child('messages');
-  var currentUserEmail;
+  bool isLoading = false;
+  bool isLoggedIn = false;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Padding(
-            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-            child: Container(
-                margin: const EdgeInsets.symmetric(vertical: 10.0),
-                child: GestureDetector(
-                    onTap: () async {
-                      await signInWithGoogle();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MainScreen()),
-                      );
-                    },
-                    child: Row(children: [
-                      Text("Log in by Google Account"),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                      )
-                    ])))));
+    return Stack(
+        children:<Widget>[
+        Center(
+          child: FlatButton(
+              onPressed: () async { await signInWithGoogle();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MainScreen()),
+              );},
+              child: Text(
+                'Sign in with Google',
+                style: TextStyle(fontSize: 16.0),
+              ),
+              color: Color(0xffdd4b39),
+              highlightColor: Color(0xffff7f7f),
+              splashColor: Colors.transparent,
+              textColor: Colors.white,
+              padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0)),
+        ),
+        Positioned(
+          child: isLoading
+              ? Container(
+            child: Center(
+              child: CircularProgressIndicator(
+                  valueColor:
+                  AlwaysStoppedAnimation<Color>(kDefaultTheme.accentColor)),
+            ),
+            color: Colors.white.withOpacity(0.8),
+          )
+              : Container(),
+        )
+        ]
+    );
   }
 
   Future<bool> signInWithGoogle() async {
+    this.setState(() {
+      isLoading = true;
+    });
+
     final GoogleSignInAccount googleUser = await googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
     final FirebaseUser user = await auth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -65,6 +84,19 @@ class LogInPageState extends State<LogInPage> {
     final FirebaseUser currentUser = await auth.currentUser();
     assert(user.uid == currentUser.uid);
 
+    UserData.fullName = user.displayName;
+    UserData.email = user.email;
+
+    this.setState(() {
+      isLoading = false;
+    });
+
     return true;
+  }
+
+  void isSignedIn() async {
+    this.setState(() {
+      isLoading = true;
+    });
   }
 }

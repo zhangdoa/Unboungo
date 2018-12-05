@@ -12,6 +12,18 @@ class DataLoader {
   DataLoader._internal();
 }
 
+class UserData {
+  static final UserData _singleton = new UserData._internal();
+  static String fullName;
+  static String email;
+
+  factory UserData() {
+    return _singleton;
+  }
+
+  UserData._internal();
+}
+
 class FriendData {
   final String fullName;
   final String email;
@@ -58,5 +70,4 @@ class RandomUserRepository implements FriendRepository {
           .toList();
     });
   }
-
 }
