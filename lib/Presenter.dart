@@ -1,22 +1,11 @@
 import 'package:unboungo/Model.dart';
-import 'package:unboungo/Interactor.dart';
 
-class FriendListPresenter {
-  FriendListInteractor _interactor;
-  FriendRepository _repository;
+abstract class FriendListPresenter {
+  void onLoadFriendDataComplete(List<FriendData> items);
+  void onLoadFriendDataError();
+}
 
-  FriendListPresenter(this._interactor){
-    _repository = new RandomUserRepository();
-  }
-
-  void loadFriends(){
-    assert(_interactor != null);
-
-    _repository.fetch()
-        .then((contacts) => _interactor.onLoadFriendDataComplete(contacts))
-        .catchError((onError) {
-      print(onError);
-      _interactor.onLoadFriendDataError();
-    });
-  }
+abstract class ChatMessageListPresenter {
+  void onLoadChatMessageComplete(List<ChatMessage> items);
+  void onLoadChatMessageError();
 }

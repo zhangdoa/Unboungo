@@ -13,16 +13,16 @@ class FriendPage extends StatefulWidget {
 }
 
 class FriendPageState extends State<FriendPage>
-    implements FriendListInteractor {
+    implements FriendListPresenter {
   FriendPageState() {
-    _presenter = new FriendListPresenter(this);
+    _interactor = new FriendListInteractor(this);
   }
 
   @override
   void initState() {
     super.initState();
     _isSearching = true;
-    _presenter.loadFriends();
+    _interactor.loadFriends();
   }
 
   @override
@@ -60,7 +60,7 @@ class FriendPageState extends State<FriendPage>
     // TODO: implement onLoadFriendsError
   }
 
-  FriendListPresenter _presenter;
+  FriendListInteractor _interactor;
   List<FriendData> _friendsData;
   bool _isSearching;
 }

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 import 'package:unboungo/Model.dart';
+import 'package:unboungo/Interactor.dart';
+import 'package:unboungo/Presenter.dart';
 
 class ChatScreen extends StatefulWidget {
  final String title;
@@ -19,9 +20,16 @@ class ChatScreen extends StatefulWidget {
   State createState() => new ChatScreenState();
 }
 
-class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
-  final reference = FirebaseDatabase.instance.reference().child('messages');
-  String _userFullName = UserData.fullName;
+class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin implements ChatMessageListPresenter {
+  ChatScreenState() {
+    _interactor = new ChatMessageInteractor(this);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _interactor.loadMessages();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +69,19 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    for (ChatMessage message in _messages)
+    for (ChatMessageWidget message in _messages)
       message.animationController.dispose();
     super.dispose();
+  }
+
+  @override
+  void onLoadChatMessageComplete(List<ChatMessage> items) {
+    _handleSubmitted(items[0].messages);
+  }
+
+  @override
+  void onLoadChatMessageError() {
+    // TODO: implement onLoadFriendsError
   }
 
   Widget _buildTextComposer() {
@@ -112,7 +130,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() {
       _isComposing = false;
     });
-    ChatMessage message = new ChatMessage(
+    ChatMessageWidget message = new ChatMessageWidget(
       text: text,
       animationController: new AnimationController(
         duration: new Duration(milliseconds: 200),
@@ -127,19 +145,17 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _sendMessage({ String text, String imageUrl }) {
-    reference.push().set({
-      'text': text,
-      'senderName': _userFullName,
-    });
+    _interactor.send(text : text);
   }
 
-  final List<ChatMessage> _messages = <ChatMessage>[];
+  ChatMessageInteractor _interactor;
+  final List<ChatMessageWidget> _messages = <ChatMessageWidget>[];
   final TextEditingController _textController = new TextEditingController();
   bool _isComposing = false;
 }
 
-class ChatMessage extends StatelessWidget {
-  ChatMessage({this.text, this.animationController});
+class ChatMessageWidget extends StatelessWidget {
+  ChatMessageWidget({this.text, this.animationController});
   final String text;
   final AnimationController animationController;
   String _userFullName = UserData.fullName;

@@ -5,6 +5,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:unboungo/RecentChatPage.dart';
 import 'package:unboungo/FriendPage.dart';
 
+import 'package:unboungo/Model.dart';
+
+import 'package:unboungo/LogInScreen.dart';
+
 import 'package:unboungo/Theme.dart';
 
 class MainScreen extends StatefulWidget {
@@ -15,6 +19,12 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   PageController _pageController;
   int _page = 0;
+
+  List<Choice> _choices = const <Choice>[
+    const Choice(title: 'Settings', icon: Icons.settings),
+    const Choice(title: 'Log out', icon: Icons.exit_to_app),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -23,12 +33,38 @@ class MainScreenState extends State<MainScreen> {
         home: Scaffold(
             appBar: AppBar(
               title: Text('Unboungo'),
+              actions: <Widget>[
+                PopupMenuButton<Choice>(
+                  onSelected: onItemMenuPress,
+                  itemBuilder: (BuildContext context) {
+                    return _choices.map((Choice choice) {
+                      return PopupMenuItem<Choice>(
+                          value: choice,
+                          child: Row(
+                            children: <Widget>[
+                              Icon(
+                                choice.icon,
+                                color: ThemeData().accentColor,
+                              ),
+                              Container(
+                                width: 10.0,
+                              ),
+                              Text(
+                                choice.title,
+                                style:
+                                    TextStyle(color: ThemeData().accentColor),
+                              ),
+                            ],
+                          ));
+                    }).toList();
+                  },
+                ),
+              ],
             ),
             body: new PageView(children: [
               new RecentChatPage(),
               new FriendPage(),
-            ], controller: _pageController,
-                onPageChanged: onPageChanged),
+            ], controller: _pageController, onPageChanged: onPageChanged),
             bottomNavigationBar: new BottomNavigationBar(items: [
               new BottomNavigationBarItem(
                   icon: new Icon(Icons.chat_bubble), title: new Text("Recent")),
@@ -48,6 +84,23 @@ class MainScreenState extends State<MainScreen> {
     });
   }
 
+  void onItemMenuPress(Choice choice) {
+    if (choice.title == 'Log out') {
+      handleSignOut();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => LogInScreen()),
+      );
+    } else {
+
+    }
+  }
+
+  Future<bool> handleSignOut() async {
+    var result = await UserAccountInteractor().signOut();
+    return result;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -59,4 +112,11 @@ class MainScreenState extends State<MainScreen> {
     super.dispose();
     _pageController.dispose();
   }
+}
+
+class Choice {
+  const Choice({this.title, this.icon});
+
+  final String title;
+  final IconData icon;
 }
