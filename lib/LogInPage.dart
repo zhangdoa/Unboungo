@@ -39,7 +39,7 @@ class LogInPageState extends State<LogInPage> {
               padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0)),
         ),
         Positioned(
-          child: UserAccountInteractor.isLoading
+          child: UserAccountInteractor().isLoading
               ? Container(
             child: Center(
               child: CircularProgressIndicator(

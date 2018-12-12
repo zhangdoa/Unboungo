@@ -1,15 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserAccountInteractor {
   static final UserAccountInteractor _singleton =
-  new UserAccountInteractor._internal();
-  static bool isLoading = false;
-  static bool isLoggedIn = false;
+      new UserAccountInteractor._internal();
+  bool isLoading = false;
+  bool isLoggedIn = false;
+  final _googleSignIn = new GoogleSignIn();
+  final _firebaseAuth = new FirebaseAuth.fromApp(FirebaseApp.instance);
 
   factory UserAccountInteractor() {
     return _singleton;
@@ -18,32 +20,26 @@ class UserAccountInteractor {
   UserAccountInteractor._internal();
 
   Future<bool> signInWithGoogle() async {
-    final googleSignIn = new GoogleSignIn();
-    final auth = FirebaseAuth.instance;
-    final firebaseStore = Firestore.instance;
     isLoading = true;
 
-    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+        await googleUser.authentication;
 
-    final FirebaseUser firebaseUser = await auth.signInWithGoogle(
+    final FirebaseUser firebaseUser = await _firebaseAuth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
+
     assert(firebaseUser.email != null);
     assert(firebaseUser.displayName != null);
     assert(!firebaseUser.isAnonymous);
     assert(await firebaseUser.getIdToken() != null);
 
-    final FirebaseUser currentUser = await auth.currentUser();
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
     assert(firebaseUser.uid == currentUser.uid);
 
     if (firebaseUser != null) {
-      // Check is already sign up
-      final QuerySnapshot result = await firebaseStore.collection('users')
-          .where('id', isEqualTo: firebaseUser.uid)
-          .getDocuments();
     }
 
     UserData.fullName = firebaseUser.displayName;
@@ -55,14 +51,11 @@ class UserAccountInteractor {
   }
 
   Future<bool> signOut() async {
-    final googleSignIn = new GoogleSignIn();
-    final auth = FirebaseAuth.instance;
-
     isLoading = true;
 
-    await auth.signOut();
-    await googleSignIn.disconnect();
-    await googleSignIn.signOut();
+    await _firebaseAuth.signOut();
+    await _googleSignIn.disconnect();
+    await _googleSignIn.signOut();
 
     isLoading = false;
 
@@ -100,8 +93,7 @@ abstract class ChatMessageRepository {
 }
 
 class FirebaseChatMessageRepository implements ChatMessageRepository {
-  Future<List<ChatMessage>> fetch() async {
-  }
+  Future<List<ChatMessage>> fetch() async {}
 
   Future<bool> send({String text}) async {
     return true;
@@ -137,7 +129,5 @@ class RandomUserRepository implements FriendRepository {
   static const _kRandomUserUrl = 'http://api.randomuser.me/?results=4';
   final JsonDecoder _decoder = new JsonDecoder();
 
-  Future<List<FriendData>> fetch() {
-
-  }
+  Future<List<FriendData>> fetch() {}
 }
