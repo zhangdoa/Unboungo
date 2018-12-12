@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:firebase_database/ui/firebase_animated_list.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-
 import 'package:unboungo/Model.dart';
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
@@ -42,12 +39,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
           child: new Column(
             children: <Widget>[
               new Flexible(
-                child: new ListView.builder(
-                  padding: new EdgeInsets.all(8.0),
-                  reverse: true,
-                  itemBuilder: (_, int index) => _messages[index],
-                  itemCount: _messages.length,
-                ),
+                child: _buildChatMessages(),
               ),
               new Divider(height: 1.0),
               new Container(
@@ -63,25 +55,35 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
                     top: new BorderSide(color: Colors.grey[200]),
                   ),
                 )
-              : null),
+              : null
+      ),
     );
   }
 
   @override
   void dispose() {
-    for (ChatMessageWidget message in _messages)
+    for (ChatMessageWidget message in _chatMessageWidgets)
       message.animationController.dispose();
     super.dispose();
   }
 
   @override
   void onLoadChatMessageComplete(List<ChatMessage> items) {
-    _handleSubmitted(items[0].messages);
+    _buildChatMessageWidgets(items[0].messages);
   }
 
   @override
   void onLoadChatMessageError() {
     // TODO: implement onLoadFriendsError
+  }
+
+  Widget _buildChatMessages() {
+   return  new ListView.builder(
+     padding: new EdgeInsets.all(8.0),
+     reverse: true,
+     itemBuilder: (_, int index) => _chatMessageWidgets[index],
+     itemCount: _chatMessageWidgets.length,
+   );
   }
 
   Widget _buildTextComposer() {
@@ -130,7 +132,12 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
     setState(() {
       _isComposing = false;
     });
-    ChatMessageWidget message = new ChatMessageWidget(
+    _buildChatMessageWidgets(text);
+    _sendMessage(text : text);
+  }
+
+  void _buildChatMessageWidgets(String text) {
+    ChatMessageWidget chatMessageWidget = new ChatMessageWidget(
       text: text,
       animationController: new AnimationController(
         duration: new Duration(milliseconds: 200),
@@ -138,10 +145,9 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
       ),
     );
     setState(() {
-      _messages.insert(0, message);
+      _chatMessageWidgets.insert(0, chatMessageWidget);
     });
-    message.animationController.forward();
-    _sendMessage(text : text);
+    chatMessageWidget.animationController.forward();
   }
 
   void _sendMessage({ String text, String imageUrl }) {
@@ -149,7 +155,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
   }
 
   ChatMessageInteractor _interactor;
-  final List<ChatMessageWidget> _messages = <ChatMessageWidget>[];
+  final List<ChatMessageWidget> _chatMessageWidgets = <ChatMessageWidget>[];
   final TextEditingController _textController = new TextEditingController();
   bool _isComposing = false;
 }

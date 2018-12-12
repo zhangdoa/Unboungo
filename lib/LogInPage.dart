@@ -44,7 +44,8 @@ class LogInPageState extends State<LogInPage> {
             child: Center(
               child: CircularProgressIndicator(
                   valueColor:
-                  AlwaysStoppedAnimation<Color>(kDefaultTheme.accentColor)),
+                  AlwaysStoppedAnimation<Color>(kDefaultTheme.accentColor)
+              ),
             ),
             color: Colors.white.withOpacity(0.8),
           )
