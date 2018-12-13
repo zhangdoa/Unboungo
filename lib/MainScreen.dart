@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:unboungo/RecentChatPage.dart';
 import 'package:unboungo/FriendPage.dart';
 
-import 'package:unboungo/Model.dart';
+import 'package:unboungo/Interactor.dart';
+import 'package:unboungo/Presenter.dart';
 
 import 'package:unboungo/LogInScreen.dart';
 
@@ -16,14 +16,10 @@ class MainScreen extends StatefulWidget {
   State createState() => new MainScreenState();
 }
 
-class MainScreenState extends State<MainScreen> {
-  PageController _pageController;
-  int _page = 0;
-
-  List<Choice> _choices = const <Choice>[
-    const Choice(title: 'Settings', icon: Icons.settings),
-    const Choice(title: 'Log out', icon: Icons.exit_to_app),
-  ];
+class MainScreenState extends State<MainScreen> implements UserAccountPresenter {
+  MainScreenState() {
+    _interactor = new UserAccountInteractor(this);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +93,7 @@ class MainScreenState extends State<MainScreen> {
   }
 
   Future<bool> handleSignOut() async {
-    var result = await UserAccountInteractor().signOut();
+    var result = await _interactor.signOut();
     return result;
   }
 
@@ -112,6 +108,23 @@ class MainScreenState extends State<MainScreen> {
     super.dispose();
     _pageController.dispose();
   }
+
+  @override
+  onSignedIn() {
+  }
+
+  @override
+  onSignedOut() {
+  }
+
+  PageController _pageController;
+  int _page = 0;
+
+  List<Choice> _choices = const <Choice>[
+    const Choice(title: 'Settings', icon: Icons.settings),
+    const Choice(title: 'Log out', icon: Icons.exit_to_app),
+  ];
+  UserAccountInteractor _interactor;
 }
 
 class Choice {

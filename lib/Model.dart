@@ -5,23 +5,20 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class UserAccountInteractor {
-  static final UserAccountInteractor _singleton =
-      new UserAccountInteractor._internal();
-  bool isLoading = false;
-  bool isLoggedIn = false;
+class UserAccountManager {
+  static final UserAccountManager _singleton =
+      new UserAccountManager._internal();
+
   final _googleSignIn = new GoogleSignIn();
   final _firebaseAuth = new FirebaseAuth.fromApp(FirebaseApp.instance);
 
-  factory UserAccountInteractor() {
+  factory UserAccountManager() {
     return _singleton;
   }
 
-  UserAccountInteractor._internal();
+  UserAccountManager._internal();
 
   Future<bool> signInWithGoogle() async {
-    isLoading = true;
-
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
@@ -39,25 +36,16 @@ class UserAccountInteractor {
     final FirebaseUser currentUser = await _firebaseAuth.currentUser();
     assert(firebaseUser.uid == currentUser.uid);
 
-    if (firebaseUser != null) {
-    }
-
     UserData.fullName = firebaseUser.displayName;
     UserData.email = firebaseUser.email;
-
-    isLoading = false;
 
     return true;
   }
 
   Future<bool> signOut() async {
-    isLoading = true;
-
     await _firebaseAuth.signOut();
     await _googleSignIn.disconnect();
     await _googleSignIn.signOut();
-
-    isLoading = false;
 
     return true;
   }
