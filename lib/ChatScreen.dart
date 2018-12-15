@@ -17,7 +17,7 @@ class ChatScreen extends StatefulWidget {
   State createState() => new ChatScreenState();
 }
 
-class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin implements ChatMessageListPresenter {
+class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin implements ChatMessagePresenter {
   ChatScreenState() {
     _interactor = new ChatMessageInteractor(this);
   }

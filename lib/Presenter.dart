@@ -5,12 +5,17 @@ abstract class UserAccountPresenter {
   void onSignedOut();
 }
 
-abstract class FriendListPresenter {
-  void onLoadFriendDataComplete(List<FriendData> items);
+abstract class FriendDataPresenter {
+  void onLoadFriendDataComplete(List<FirendData> items);
   void onLoadFriendDataError();
 }
 
-abstract class ChatMessageListPresenter {
+abstract class RecentChatPresenter {
+  void onLoadRecentChatDataComplete(List<RecentChatData> items);
+  void onLoadRecentChatDataError();
+}
+
+abstract class ChatMessagePresenter {
   void onLoadChatMessageComplete(List<ChatMessage> items);
   void onLoadChatMessageError();
 }

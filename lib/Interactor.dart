@@ -20,7 +20,7 @@ class UserAccountInteractor {
 }
 
 class FriendListInteractor {
-  FriendListPresenter _presenter;
+  FriendDataPresenter _presenter;
   FriendRepository _repository;
 
   FriendListInteractor(this._presenter) {
@@ -39,9 +39,30 @@ class FriendListInteractor {
     });
   }
 }
+class RecentChatInteractor {
+  RecentChatPresenter _presenter;
+  RecentChatRepository _repository;
+
+  RecentChatInteractor(this._presenter) {
+    _repository = new FirebaseRecentChatRepository();
+  }
+
+  void loadRecentChats() {
+    assert(_presenter != null);
+
+    _repository
+        .fetch()
+        .then((contacts) => _presenter.onLoadRecentChatDataComplete(contacts))
+        .catchError((onError) {
+      print(onError);
+      _presenter.onLoadRecentChatDataError();
+    });
+  }
+}
+
 
 class ChatMessageInteractor {
-  ChatMessageListPresenter _presenter;
+  ChatMessagePresenter _presenter;
   ChatMessageRepository _repository;
 
   ChatMessageInteractor(this._presenter) {

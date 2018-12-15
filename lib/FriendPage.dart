@@ -13,7 +13,7 @@ class FriendPage extends StatefulWidget {
 }
 
 class FriendPageState extends State<FriendPage>
-    implements FriendListPresenter {
+    implements FriendDataPresenter {
   FriendPageState() {
     _interactor = new FriendListInteractor(this);
   }
@@ -21,7 +21,7 @@ class FriendPageState extends State<FriendPage>
   @override
   void initState() {
     super.initState();
-    _isSearching = true;
+    _isLoading = true;
     _interactor.loadFriends();
   }
 
@@ -31,7 +31,7 @@ class FriendPageState extends State<FriendPage>
   }
 
   Widget _buildFriendWidgets() {
-    if (_isSearching) {
+    if (_isLoading) {
       return Center(
           child: Padding(
               padding: const EdgeInsets.only(left: 16.0, right: 16.0),
@@ -39,19 +39,19 @@ class FriendPageState extends State<FriendPage>
     } else {
       return ListView.builder(
           shrinkWrap: true,
-          itemCount: _friendsData.length,
+          itemCount: _friendsDatas.length,
           itemBuilder: (context, index) {
-            return FriendWidget(_friendsData[index].fullName, _friendsData[index].email);
+            return FriendWidget(_friendsDatas[index].fullName, _friendsDatas[index].email);
           },
       );
     }
   }
 
   @override
-  void onLoadFriendDataComplete(List<FriendData> items) {
+  void onLoadFriendDataComplete(List<FirendData> items) {
     setState(() {
-      _friendsData = items;
-      _isSearching = false;
+      _friendsDatas = items;
+      _isLoading = false;
     });
   }
 
@@ -61,8 +61,8 @@ class FriendPageState extends State<FriendPage>
   }
 
   FriendListInteractor _interactor;
-  List<FriendData> _friendsData;
-  bool _isSearching;
+  List<FirendData> _friendsDatas;
+  bool _isLoading;
 }
 
 class FriendWidget extends StatelessWidget {
