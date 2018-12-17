@@ -14,26 +14,18 @@ class LogInScreen extends StatefulWidget {
 class LogInScreenState extends State<LogInScreen> {
   PageController _pageController;
   int _page = 0;
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
         title: "Unboungo",
         theme: kDefaultTheme,
         home: Scaffold(
-            appBar: AppBar(
-              title: Text('Unboungo'),
-            ),
-            body: new PageView(children: [
-              new LogInPage(),
-              new SignUpPage(),
-            ], controller: _pageController,
-                onPageChanged: onPageChanged),
-            bottomNavigationBar: new BottomNavigationBar(items: [
-              new BottomNavigationBarItem(
-                  icon: new Icon(Icons.chat_bubble), title: new Text("Log In")),
-              new BottomNavigationBarItem(
-                  icon: new Icon(Icons.contacts), title: new Text("Sign Up")),
-            ], onTap: navigationTapped, currentIndex: _page)));
+          body: new PageView(children: [
+            new LogInPage(),
+            new SignUpPage(),
+          ], controller: _pageController, onPageChanged: onPageChanged),
+        ));
   }
 
   void navigationTapped(int page) {

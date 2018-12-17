@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserAccountManager {
@@ -11,6 +12,7 @@ class UserAccountManager {
       new UserAccountManager._internal();
 
   final _googleSignIn = new GoogleSignIn();
+  final _facebookSignIn = new FacebookLogin();
   final _firebaseAuth = new FirebaseAuth.fromApp(FirebaseApp.instance);
   final _firestore = Firestore.instance;
 
@@ -30,13 +32,7 @@ class UserAccountManager {
       idToken: googleAuth.idToken,
     );
 
-    assert(firebaseUser.email != null);
-    assert(firebaseUser.displayName != null);
-    assert(!firebaseUser.isAnonymous);
-    assert(await firebaseUser.getIdToken() != null);
-
-    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
-    assert(firebaseUser.uid == currentUser.uid);
+    await validateFirebaseUser(firebaseUser);
 
     if (firebaseUser != null) {
       // Check is already sign up
@@ -54,6 +50,32 @@ class UserAccountManager {
 
     UserData.fullName = firebaseUser.displayName;
     UserData.email = firebaseUser.email;
+
+    return true;
+  }
+
+  Future validateFirebaseUser(FirebaseUser firebaseUser) async {
+    assert(firebaseUser.email != null);
+    assert(firebaseUser.displayName != null);
+    assert(!firebaseUser.isAnonymous);
+    assert(await firebaseUser.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    assert(firebaseUser.uid == currentUser.uid);
+  }
+
+  Future<bool> signInWithFacebook() async {
+    final facebookSignInResult = await _facebookSignIn.logInWithReadPermissions(['email', 'public_profile']);
+    if(facebookSignInResult.status == FacebookLoginStatus.loggedIn){
+      final FirebaseUser firebaseUser =  await _firebaseAuth.signInWithFacebook(
+          accessToken: facebookSignInResult.accessToken.token
+        );
+
+      await validateFirebaseUser(firebaseUser);
+
+      UserData.fullName = firebaseUser.displayName;
+      UserData.email = firebaseUser.email;
+    }
 
     return true;
   }

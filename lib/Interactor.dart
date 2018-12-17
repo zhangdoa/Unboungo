@@ -12,6 +12,12 @@ class UserAccountInteractor {
     return true;
   }
 
+  Future<bool> signInWithFacebook() async {
+    await UserAccountManager().signInWithFacebook();
+    _presenter.onSignedIn();
+    return true;
+  }
+
   Future<bool> signOut() async {
     await UserAccountManager().signOut();
     _presenter.onSignedOut();
