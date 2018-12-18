@@ -4,15 +4,16 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+//import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info/device_info.dart';
 
 class UserAccountManager {
   static final UserAccountManager _singleton =
       new UserAccountManager._internal();
 
   final _googleSignIn = new GoogleSignIn();
-  final _facebookSignIn = new FacebookLogin();
+  //final _facebookSignIn = new FacebookLogin();
   final _firebaseAuth = new FirebaseAuth.fromApp(FirebaseApp.instance);
   final _firestore = Firestore.instance;
 
@@ -69,17 +70,17 @@ class UserAccountManager {
   }
 
   Future<bool> signInWithFacebook() async {
-    final facebookSignInResult = await _facebookSignIn
-        .logInWithReadPermissions(['email', 'public_profile']);
-    if (facebookSignInResult.status == FacebookLoginStatus.loggedIn) {
-      final FirebaseUser firebaseUser = await _firebaseAuth.signInWithFacebook(
-          accessToken: facebookSignInResult.accessToken.token);
-
-      await validateFirebaseUser(firebaseUser);
-
-      UserData.fullName = firebaseUser.displayName;
-      UserData.email = firebaseUser.email;
-    }
+//    final facebookSignInResult = await _facebookSignIn
+//        .logInWithReadPermissions(['email', 'public_profile']);
+//    if (facebookSignInResult.status == FacebookLoginStatus.loggedIn) {
+//      final FirebaseUser firebaseUser = await _firebaseAuth.signInWithFacebook(
+//          accessToken: facebookSignInResult.accessToken.token);
+//
+//      await validateFirebaseUser(firebaseUser);
+//
+//      UserData.fullName = firebaseUser.displayName;
+//      UserData.email = firebaseUser.email;
+//    }
 
     return true;
   }
@@ -179,4 +180,47 @@ class FirebaseChatMessageRepository implements ChatMessageRepository {
   Future<bool> send({String text}) async {
     return true;
   }
+}
+class UbUtilities {
+  Future<List<String>> getAndroidDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    List<String> result = [];
+    result.add(androidInfo.androidId);
+    result.add(androidInfo.board);
+    result.add(androidInfo.bootloader);
+    result.add(androidInfo.brand);
+    result.add(androidInfo.device);
+    result.add(androidInfo.display);
+    result.add(androidInfo.fingerprint);
+    result.add(androidInfo.hardware);
+    result.add(androidInfo.host);
+    result.add(androidInfo.isPhysicalDevice.toString());
+    result.add(androidInfo.manufacturer);
+    result.add(androidInfo.model);
+    result.add(androidInfo.product);
+    result.addAll(androidInfo.supported32BitAbis);
+    result.addAll(androidInfo.supported64BitAbis);
+    result.add(androidInfo.tags);
+    result.add(androidInfo.type);
+    result.add(androidInfo.version.toString());
+    return result;
+  }
+
+  Future<List<String>> getIOSDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+    List<String> result;
+    result.add(iosInfo.localizedModel);
+    result.add(iosInfo.model);
+    return result;
+  }
+
+  static final UbUtilities _singleton = new UbUtilities._internal();
+
+  factory UbUtilities() {
+    return _singleton;
+  }
+
+  UbUtilities._internal();
 }

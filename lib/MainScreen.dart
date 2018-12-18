@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:unboungo/RecentChatPage.dart';
 import 'package:unboungo/FriendPage.dart';
+import 'package:unboungo/SettingPage.dart';
 
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
@@ -28,46 +29,12 @@ class MainScreenState extends State<MainScreen>
         title: "Unboungo",
         theme: kDefaultTheme,
         home: Scaffold(
-            appBar: AppBar(
-              title: Text('Unboungo'),
-              actions: <Widget>[
-                PopupMenuButton<Choice>(
-                  onSelected: onItemMenuPress,
-                  itemBuilder: (BuildContext context) {
-                    return _choices.map((Choice choice) {
-                      return PopupMenuItem<Choice>(
-                          value: choice,
-                          child: Row(
-                            children: <Widget>[
-                              Icon(
-                                choice.icon,
-                                color: ThemeData().accentColor,
-                              ),
-                              Container(
-                                width: 10.0,
-                              ),
-                              Text(
-                                choice.title,
-                                style:
-                                    TextStyle(color: ThemeData().accentColor),
-                              ),
-                            ],
-                          ));
-                    }).toList();
-                  },
-                ),
-              ],
-            ),
-            body: new PageView(children: [
-              new RecentChatPage(),
-              new FriendPage(),
-            ], controller: _pageController, onPageChanged: onPageChanged),
-            bottomNavigationBar: new BottomNavigationBar(items: [
-              new BottomNavigationBarItem(
-                  icon: new Icon(Icons.chat_bubble), title: new Text("Recent")),
-              new BottomNavigationBarItem(
-                  icon: new Icon(Icons.contacts), title: new Text("Friends")),
-            ], onTap: navigationTapped, currentIndex: _page)));
+          body: new PageView(children: [
+            //new RecentChatPage(),
+            new SettingPage(),
+            new FriendPage(),
+          ], controller: _pageController, onPageChanged: onPageChanged),
+        ));
   }
 
   void navigationTapped(int page) {
