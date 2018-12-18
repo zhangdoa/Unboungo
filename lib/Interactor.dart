@@ -6,6 +6,12 @@ class UserAccountInteractor {
 
   UserAccountInteractor(this._presenter) {}
 
+  Future<bool> signInWithEmail() async {
+    await UserAccountManager().signInWithEmail();
+    _presenter.onSignedIn();
+    return true;
+  }
+
   Future<bool> signInWithGoogle() async {
     await UserAccountManager().signInWithGoogle();
     _presenter.onSignedIn();

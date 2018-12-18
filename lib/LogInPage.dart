@@ -28,6 +28,7 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
       child: new Column(
         children: <Widget>[
           buildCenterLogo(),
+          buildLoadingCircularProgressIndicator(),
           buildLabel("EMAIL"),
           buildInputFieldContainer('example@example.com'),
           Divider(
@@ -56,11 +57,13 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
             children: <Widget>[
               buildRowButtonPadder(),
               Expanded(
-                child: buildRoundButton('Google', Color(0xffdd4b39), signInWithGoogle),
+                child: buildRoundButton(
+                    'Google', Color(0xffdd4b39), signInWithGoogle),
               ),
               buildRowButtonPadder(),
               Expanded(
-                child: buildRoundButton('Facebook', Color(0Xff3B5998), signInWithFacebook),
+                child: buildRoundButton(
+                    'Facebook', Color(0Xff3B5998), signInWithFacebook),
               ),
               buildRowButtonPadder(),
             ],
@@ -141,6 +144,7 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
       children: <Widget>[
         new Expanded(
           child: TextField(
+            //controller: _textController,
             obscureText: true,
             textAlign: TextAlign.left,
             decoration: InputDecoration(
@@ -155,14 +159,16 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
   }
 
   Widget buildLoadingCircularProgressIndicator() {
-    return Container(
-      child: Center(
-        child: CircularProgressIndicator(
-            valueColor:
-                AlwaysStoppedAnimation<Color>(kDefaultTheme.accentColor)),
-      ),
-      color: Colors.white.withOpacity(0.8),
-    );
+    return _isLoading
+        ? Container(
+            child: Center(
+              child: CircularProgressIndicator(
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(kDefaultTheme.accentColor)),
+            ),
+            color: Colors.white.withOpacity(0.8),
+          )
+        : Container();
   }
 
   Widget buildRoundButton(text, color, onPressedCallback) {
@@ -176,7 +182,7 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
           style: TextStyle(fontSize: 16.0),
         ),
         color: color,
-        highlightColor: Color(0xffff7f7f),
+        highlightColor: Color(0xffff7f7ff),
         splashColor: Colors.transparent,
         textColor: Colors.white,
         padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0));
@@ -186,7 +192,7 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
     setState(() {
       _isLoading = true;
     });
-    await _interactor.signInWithGoogle();
+    await _interactor.signInWithEmail();
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MainScreen()),
@@ -228,6 +234,8 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
       _isLoading = false;
     });
   }
+
+  final TextEditingController _textController = new TextEditingController();
 
   bool _isLoading = false;
   UserAccountInteractor _interactor;

@@ -16,7 +16,8 @@ class MainScreen extends StatefulWidget {
   State createState() => new MainScreenState();
 }
 
-class MainScreenState extends State<MainScreen> implements UserAccountPresenter {
+class MainScreenState extends State<MainScreen>
+    implements UserAccountPresenter {
   MainScreenState() {
     _interactor = new UserAccountInteractor(this);
   }
@@ -87,9 +88,7 @@ class MainScreenState extends State<MainScreen> implements UserAccountPresenter 
         context,
         MaterialPageRoute(builder: (context) => LogInScreen()),
       );
-    } else {
-
-    }
+    } else {}
   }
 
   Future<bool> handleSignOut() async {
@@ -110,12 +109,10 @@ class MainScreenState extends State<MainScreen> implements UserAccountPresenter 
   }
 
   @override
-  onSignedIn() {
-  }
+  onSignedIn() {}
 
   @override
-  onSignedOut() {
-  }
+  onSignedOut() {}
 
   PageController _pageController;
   int _page = 0;

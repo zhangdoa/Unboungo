@@ -12,4 +12,3 @@ class UnboungoApp extends StatelessWidget {
     return new LogInScreen();
   }
 }
-

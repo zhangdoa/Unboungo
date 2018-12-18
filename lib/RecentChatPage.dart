@@ -26,10 +26,6 @@ class RecentChatPageState extends State<RecentChatPage>
 
   @override
   Widget build(BuildContext context) {
-    return _buildRecentChatWidgets();
-  }
-
-  Widget _buildRecentChatWidgets() {
     if (_isLoading) {
       return Center(
           child: Padding(

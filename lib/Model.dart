@@ -22,6 +22,10 @@ class UserAccountManager {
 
   UserAccountManager._internal();
 
+  Future<bool> signInWithEmail() async {
+    return true;
+  }
+
   Future<bool> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
@@ -65,11 +69,11 @@ class UserAccountManager {
   }
 
   Future<bool> signInWithFacebook() async {
-    final facebookSignInResult = await _facebookSignIn.logInWithReadPermissions(['email', 'public_profile']);
-    if(facebookSignInResult.status == FacebookLoginStatus.loggedIn){
-      final FirebaseUser firebaseUser =  await _firebaseAuth.signInWithFacebook(
-          accessToken: facebookSignInResult.accessToken.token
-        );
+    final facebookSignInResult = await _facebookSignIn
+        .logInWithReadPermissions(['email', 'public_profile']);
+    if (facebookSignInResult.status == FacebookLoginStatus.loggedIn) {
+      final FirebaseUser firebaseUser = await _firebaseAuth.signInWithFacebook(
+          accessToken: facebookSignInResult.accessToken.token);
 
       await validateFirebaseUser(firebaseUser);
 
@@ -140,8 +144,8 @@ class RecentChatData {
   const RecentChatData({this.lastMessage, this.userName});
 
   RecentChatData.fromMap(Map<String, dynamic> map)
-      : lastMessage = map['lastMessage'] ,
-        userName ="${map['name']['first']} ${map['name']['last']}";
+      : lastMessage = map['lastMessage'],
+        userName = "${map['name']['first']} ${map['name']['last']}";
 }
 
 abstract class RecentChatRepository {
@@ -149,8 +153,7 @@ abstract class RecentChatRepository {
 }
 
 class FirebaseRecentChatRepository implements RecentChatRepository {
-  Future<List<RecentChatData>> fetch() {
-  }
+  Future<List<RecentChatData>> fetch() {}
 }
 
 class ChatMessage {

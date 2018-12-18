@@ -7,7 +7,8 @@ import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
 
 class ChatScreen extends StatefulWidget {
- final String title;
+  final String title;
+
   ChatScreen({
     Key key,
     this.title,
@@ -17,7 +18,9 @@ class ChatScreen extends StatefulWidget {
   State createState() => new ChatScreenState();
 }
 
-class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin implements ChatMessagePresenter {
+class ChatScreenState extends State<ChatScreen>
+    with TickerProviderStateMixin
+    implements ChatMessagePresenter {
   ChatScreenState() {
     _interactor = new ChatMessageInteractor(this);
   }
@@ -55,8 +58,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
                     top: new BorderSide(color: Colors.grey[200]),
                   ),
                 )
-              : null
-      ),
+              : null),
     );
   }
 
@@ -78,12 +80,12 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
   }
 
   Widget _buildChatMessages() {
-   return  new ListView.builder(
-     padding: new EdgeInsets.all(8.0),
-     reverse: true,
-     itemBuilder: (_, int index) => _chatMessageWidgets[index],
-     itemCount: _chatMessageWidgets.length,
-   );
+    return new ListView.builder(
+      padding: new EdgeInsets.all(8.0),
+      reverse: true,
+      itemBuilder: (_, int index) => _chatMessageWidgets[index],
+      itemCount: _chatMessageWidgets.length,
+    );
   }
 
   Widget _buildTextComposer() {
@@ -133,7 +135,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
       _isComposing = false;
     });
     _buildChatMessageWidgets(text);
-    _sendMessage(text : text);
+    _sendMessage(text: text);
   }
 
   void _buildChatMessageWidgets(String text) {
@@ -150,8 +152,8 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
     chatMessageWidget.animationController.forward();
   }
 
-  void _sendMessage({ String text, String imageUrl }) {
-    _interactor.send(text : text);
+  void _sendMessage({String text, String imageUrl}) {
+    _interactor.send(text: text);
   }
 
   ChatMessageInteractor _interactor;
@@ -162,6 +164,7 @@ class ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin im
 
 class ChatMessageWidget extends StatelessWidget {
   ChatMessageWidget({this.text, this.animationController});
+
   final String text;
   final AnimationController animationController;
   String _userFullName = UserData.fullName;
@@ -181,7 +184,8 @@ class ChatMessageWidget extends StatelessWidget {
                 child: new Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
-                    new Text(_userFullName, style: Theme.of(context).textTheme.subhead),
+                    new Text(_userFullName,
+                        style: Theme.of(context).textTheme.subhead),
                     new Container(
                       child: new Text(text),
                     ),

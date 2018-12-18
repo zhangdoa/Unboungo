@@ -12,8 +12,7 @@ class FriendPage extends StatefulWidget {
   State createState() => new FriendPageState();
 }
 
-class FriendPageState extends State<FriendPage>
-    implements FriendDataPresenter {
+class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
   FriendPageState() {
     _interactor = new FriendListInteractor(this);
   }
@@ -38,11 +37,12 @@ class FriendPageState extends State<FriendPage>
               child: CircularProgressIndicator()));
     } else {
       return ListView.builder(
-          shrinkWrap: true,
-          itemCount: _friendsDatas.length,
-          itemBuilder: (context, index) {
-            return FriendWidget(_friendsDatas[index].fullName, _friendsDatas[index].email);
-          },
+        shrinkWrap: true,
+        itemCount: _friendsDatas.length,
+        itemBuilder: (context, index) {
+          return FriendWidget(
+              _friendsDatas[index].fullName, _friendsDatas[index].email);
+        },
       );
     }
   }
@@ -79,7 +79,8 @@ class FriendWidget extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ChatScreen(title: _friendFullName)),
+              MaterialPageRoute(
+                  builder: (context) => ChatScreen(title: _friendFullName)),
             );
           },
           child: Row(
