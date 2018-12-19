@@ -7,6 +7,8 @@ import 'package:unboungo/MainScreen.dart';
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
 
+import 'package:unboungo/WidgetBuilders.dart';
+
 import 'package:unboungo/Theme.dart';
 
 class LogInPage extends StatefulWidget {
@@ -27,19 +29,19 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
       ),
       child: new Column(
         children: <Widget>[
-          buildCenterLogo(),
+          buildCenterLogo( 'Unboungo', Icons.device_hub, Colors.redAccent),
           buildLoadingCircularProgressIndicator(),
-          buildLabel("EMAIL"),
+          buildLabel("EMAIL", Colors.redAccent),
           buildInputFieldContainer('example@example.com'),
           Divider(
             height: 24.0,
           ),
-          buildLabel("PASSWORD"),
+          buildLabel("PASSWORD", Colors.redAccent),
           buildInputFieldContainer('********'),
           Divider(
             height: 24.0,
           ),
-          buildRoundButton('Log in', Color(0xffdd4b39), signInWithEmail),
+          buildRoundButton('Log in', Colors.redAccent, signInWithEmail),
           Divider(
             height: 24.0,
           ),
@@ -95,48 +97,6 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
     );
   }
 
-  Widget buildCenterLogo() {
-    return Container(
-      padding: EdgeInsets.all(120.0),
-      child: Center(
-        child: Column(children: <Widget>[
-          Icon(
-            Icons.device_hub,
-            color: Colors.redAccent,
-            size: 50.0,
-          ),
-          Text(
-            'Unboungo',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 32.0,
-            ),
-          ),
-        ]),
-      ),
-    );
-  }
-
-  Widget buildLabel(text) {
-    return new Row(
-      children: <Widget>[
-        Expanded(
-          child: new Padding(
-            padding: const EdgeInsets.only(left: 40.0),
-            child: new Text(
-              text,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.redAccent,
-                fontSize: 15.0,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget buildInputRow(hintText) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -144,7 +104,7 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
       children: <Widget>[
         new Expanded(
           child: TextField(
-            //controller: _textController,
+            controller: _textController,
             obscureText: true,
             textAlign: TextAlign.left,
             decoration: InputDecoration(
@@ -169,23 +129,6 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
             color: Colors.white.withOpacity(0.8),
           )
         : Container();
-  }
-
-  Widget buildRoundButton(text, color, onPressedCallback) {
-    return FlatButton(
-        shape: new RoundedRectangleBorder(
-          borderRadius: new BorderRadius.circular(30.0),
-        ),
-        onPressed: onPressedCallback,
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 16.0),
-        ),
-        color: color,
-        highlightColor: Color(0xffff7f7ff),
-        splashColor: Colors.transparent,
-        textColor: Colors.white,
-        padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0));
   }
 
   Future signInWithEmail() async {
