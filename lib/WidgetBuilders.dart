@@ -12,7 +12,7 @@ Widget buildRoundButton(text, textColor, onPressedCallback) {
         style: new TextStyle(fontSize: 16.0),
       ),
       color: textColor,
-      highlightColor:Colors.white70,
+      highlightColor: Colors.white70,
       splashColor: Colors.transparent,
       textColor: Colors.white,
       padding: EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 15.0));
@@ -38,7 +38,7 @@ Widget buildLabel(text, textColor) {
   );
 }
 
-Widget buildCenterLogo(text, icon, iconColor) {
+Widget buildCenterLogo(text, fontSize, icon, iconColor) {
   return new Container(
     padding: EdgeInsets.all(100.0),
     child: new Center(
@@ -48,11 +48,15 @@ Widget buildCenterLogo(text, icon, iconColor) {
           color: iconColor,
           size: 50.0,
         ),
-        new Text(
-          text,
-          style: new TextStyle(
-            color: Colors.white,
-            fontSize: 32.0,
+        new Container(
+          padding: EdgeInsets.all(10.0),
+          child: Text(
+            text,
+            style: new TextStyle(
+              color: Colors.white,
+              fontSize: fontSize,
+              letterSpacing: 4.0,
+            ),
           ),
         ),
       ]),

@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:unboungo/RecentChatPage.dart';
 import 'package:unboungo/FriendPage.dart';
 import 'package:unboungo/SettingPage.dart';
+import 'package:unboungo/CameraPage.dart';
 
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
@@ -32,7 +33,8 @@ class MainScreenState extends State<MainScreen>
           body: new PageView(children: [
             //new RecentChatPage(),
             new SettingPage(),
-            new FriendPage(),
+            new CameraPage(),
+            //new FriendPage(),
           ], controller: _pageController, onPageChanged: onPageChanged),
         ));
   }

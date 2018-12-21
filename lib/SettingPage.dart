@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'dart:async';
-
 import 'package:unboungo/Model.dart';
 import 'package:unboungo/WidgetBuilders.dart';
-import 'package:unboungo/Theme.dart';
 
 class SettingPage extends StatefulWidget {
   @override
@@ -22,7 +19,8 @@ class SettingPageState extends State<SettingPage>
         ),
         child: Column(
           children: <Widget>[
-            buildCenterLogo('Settings', Icons.device_hub, Colors.redAccent),
+            buildCenterLogo(
+                'SETTINGS', 24.0, Icons.device_hub, Colors.redAccent),
             buildLabel('Device info', Colors.redAccent),
             _isDeviceInfosAcquired
                 ? buildDeviceInfoListView()

@@ -29,7 +29,7 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
       ),
       child: new Column(
         children: <Widget>[
-          buildCenterLogo( 'Unboungo', Icons.device_hub, Colors.redAccent),
+          buildCenterLogo( 'UNBOUNGO',24.0, Icons.device_hub, Colors.redAccent),
           buildLoadingCircularProgressIndicator(),
           buildLabel("EMAIL", Colors.redAccent),
           buildInputFieldContainer('example@example.com'),
