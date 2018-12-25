@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:unboungo/Model.dart';
 import 'package:unboungo/WidgetBuilders.dart';
 import 'package:camera/camera.dart';
 
@@ -23,7 +22,7 @@ class CameraPageState extends State<CameraPage> {
   Column _buildInitialPage() {
     return Column(
       children: <Widget>[
-        buildCenterLogo('Camera Preview', 18.0, Icons.camera, Colors.redAccent),
+        buildCenterLogo('CAMERA PREVIEW', 20.0, Icons.camera, Colors.redAccent),
         Divider(
           height: 24.0,
         ),

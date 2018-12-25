@@ -20,8 +20,9 @@ class SettingPageState extends State<SettingPage>
         child: Column(
           children: <Widget>[
             buildCenterLogo(
-                'SETTINGS', 24.0, Icons.device_hub, Colors.redAccent),
+                'SETTINGS', 20.0, Icons.device_hub, Colors.redAccent),
             buildLabel('Device info', Colors.redAccent),
+            Divider(height: 12.0),
             _isDeviceInfosAcquired
                 ? buildDeviceInfoListView()
                 : Text('Please press the button to get device info',
@@ -29,6 +30,7 @@ class SettingPageState extends State<SettingPage>
                       color: Colors.grey,
                       fontSize: 15.0,
                     )),
+            Divider(height: 12.0),
             buildRoundButton(
                 'Get Device info', Colors.redAccent, getDeviceInfos),
           ],
@@ -38,7 +40,7 @@ class SettingPageState extends State<SettingPage>
   Widget buildDeviceInfoListView() {
     return new Flexible(
       child: ListView.builder(
-        padding: EdgeInsets.fromLTRB(40.0, 40.0, 0.0, 0.0),
+        padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
         reverse: true,
         itemBuilder: (_, int index) => _deviceInfoWidgets[index],
         itemCount: _deviceInfoWidgets.length,
@@ -51,16 +53,16 @@ class SettingPageState extends State<SettingPage>
     setState(() {
       _deviceInfoWidgets.clear();
     });
-    for (var value in _deviceInfos) {
-      _buildDeviceInfoWidgets(value);
-    }
+    _deviceInfos.forEach(
+        (String type, String text) => _buildDeviceInfoWidgets(type, text));
     setState(() {
       _isDeviceInfosAcquired = true;
     });
   }
 
-  void _buildDeviceInfoWidgets(String text) {
+  void _buildDeviceInfoWidgets(String type, String text) {
     DeviceInfoWidget deviceInfoWidget = new DeviceInfoWidget(
+      type: type,
       text: text,
       animationController: new AnimationController(
         duration: new Duration(milliseconds: 200),
@@ -75,23 +77,39 @@ class SettingPageState extends State<SettingPage>
 
   bool _isDeviceInfosAcquired = false;
   final List<DeviceInfoWidget> _deviceInfoWidgets = <DeviceInfoWidget>[];
-  List<String> _deviceInfos;
+  Map<String, String> _deviceInfos;
 }
 
 class DeviceInfoWidget extends StatelessWidget {
-  DeviceInfoWidget({this.text, this.animationController});
+  DeviceInfoWidget({this.type, this.text, this.animationController});
 
+  final String type;
   final String text;
   final AnimationController animationController;
 
   @override
   Widget build(BuildContext context) {
-    return new Text(
-      text,
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 15.0,
-      ),
+    return new Column(
+      children: <Widget>[
+        Text(type,
+            style: TextStyle(
+              color: Colors.redAccent,
+              fontSize: 15.0,
+            ),
+            textAlign: TextAlign.center),
+        Container(
+          child: Text(text,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15.0,
+              ),
+              textAlign: TextAlign.center),
+          padding: const EdgeInsets.all(2.0),
+        ),
+        Divider(
+          height: 12.0,
+        )
+      ],
     );
   }
 }

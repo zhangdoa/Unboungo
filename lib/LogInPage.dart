@@ -126,7 +126,7 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
                   valueColor:
                       AlwaysStoppedAnimation<Color>(kDefaultTheme.accentColor)),
             ),
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withOpacity(1.0),
           )
         : Container();
   }

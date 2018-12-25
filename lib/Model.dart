@@ -182,29 +182,33 @@ class FirebaseChatMessageRepository implements ChatMessageRepository {
   }
 }
 class UbUtilities {
-  Future<List<String>> getAndroidDeviceInfo() async {
+  Future<Map<String, String>> getAndroidDeviceInfo() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-    List<String> result = [];
-    result.add(androidInfo.androidId);
-    result.add(androidInfo.board);
-    result.add(androidInfo.bootloader);
-    result.add(androidInfo.brand);
-    result.add(androidInfo.device);
-    result.add(androidInfo.display);
-    result.add(androidInfo.fingerprint);
-    result.add(androidInfo.hardware);
-    result.add(androidInfo.host);
-    result.add(androidInfo.isPhysicalDevice.toString());
-    result.add(androidInfo.manufacturer);
-    result.add(androidInfo.model);
-    result.add(androidInfo.product);
-    result.addAll(androidInfo.supported32BitAbis);
-    result.addAll(androidInfo.supported64BitAbis);
-    result.add(androidInfo.tags);
-    result.add(androidInfo.type);
-    result.add(androidInfo.version.toString());
-    return result;
+    Map<String, String> results = new Map();
+    results.putIfAbsent('AndroidID', ()=> androidInfo.androidId);
+    results.putIfAbsent('Board', ()=> androidInfo.board);
+    results.putIfAbsent('Bootloader', ()=> androidInfo.bootloader);
+    results.putIfAbsent('Brand', ()=> androidInfo.brand);
+    results.putIfAbsent('Device', ()=> androidInfo.device);
+    results.putIfAbsent('Display', ()=> androidInfo.display);
+    results.putIfAbsent('Fingerprint' , ()=> androidInfo.fingerprint);
+    results.putIfAbsent('Hardware' , ()=> androidInfo.hardware);
+    results.putIfAbsent('Host' , ()=> androidInfo.host);
+    results.putIfAbsent('Is Physical Device' , ()=> androidInfo.isPhysicalDevice.toString());
+    results.putIfAbsent('Manufacturer' , ()=> androidInfo.manufacturer);
+    results.putIfAbsent('Model' , ()=> androidInfo.model);
+    results.putIfAbsent('Product' , ()=> androidInfo.product);
+    androidInfo.supported32BitAbis.forEach((String val)=> results.putIfAbsent('Supported 32-Bit Abis',()=> val));
+    androidInfo.supported64BitAbis.forEach((String val)=> results.putIfAbsent('Supported 64-Bit Abis',()=> val));
+    results.putIfAbsent('Tags' , ()=> androidInfo.tags);
+    results.putIfAbsent('Type' , ()=> androidInfo.type);
+    results.putIfAbsent('Base OS' , ()=> androidInfo.version.baseOS);
+    results.putIfAbsent('Codename' , ()=> androidInfo.version.codename);
+    results.putIfAbsent('Incremental' , ()=> androidInfo.version.incremental);
+    results.putIfAbsent('Release' , ()=> androidInfo.version.release);
+    results.putIfAbsent('SecurityPatch' , ()=> androidInfo.version.securityPatch);
+    return results;
   }
 
   Future<List<String>> getIOSDeviceInfo() async {

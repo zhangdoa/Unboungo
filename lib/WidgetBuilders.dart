@@ -57,6 +57,7 @@ Widget buildCenterLogo(text, fontSize, icon, iconColor) {
               fontSize: fontSize,
               letterSpacing: 4.0,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ]),
