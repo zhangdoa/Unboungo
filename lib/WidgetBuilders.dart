@@ -64,3 +64,39 @@ Widget buildCenterLogo(text, fontSize, icon, iconColor) {
     ),
   );
 }
+
+Container buildInputFieldContainer(hintText, textController) {
+  return new Container(
+    margin: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
+    alignment: Alignment.center,
+    decoration: BoxDecoration(
+      border: Border(
+        bottom: BorderSide(
+            color: Colors.redAccent, width: 0.5, style: BorderStyle.solid),
+      ),
+    ),
+    padding: const EdgeInsets.only(left: 0.0, right: 10.0),
+    child: buildInputRow(hintText, textController),
+  );
+}
+
+  Widget buildInputRow(hintText, textController) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        new Expanded(
+          child: TextField(
+            controller: textController,
+            obscureText: true,
+            textAlign: TextAlign.left,
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: hintText,
+              hintStyle: TextStyle(color: Colors.grey),
+            ),
+          ),
+        ),
+      ],
+    );
+  }

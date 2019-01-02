@@ -15,6 +15,8 @@ class MapPageState extends State<MapPage> {
         decoration: BoxDecoration(
           color: Colors.black,
         ),
-        child: buildCenterLogo('MAP', 20.0, Icons.map, Colors.redAccent));
+        child: Column(children: <Widget>[
+          buildCenterLogo('MAP', 20.0, Icons.map, Colors.redAccent),
+        ]));
   }
 }

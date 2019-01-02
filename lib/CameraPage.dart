@@ -26,12 +26,24 @@ class CameraPageState extends State<CameraPage> {
         Divider(
           height: 24.0,
         ),
-        buildRoundButton('Open Camera', Colors.redAccent, prepareCamera)
+        buildRoundButton('Open Camera', Colors.redAccent, _prepareCamera),
+        Divider(
+          height: 24.0,
+        ),
+        buildRoundButton('Scan QR Code', Colors.redAccent, _scanQRCode),
+        Divider(
+          height: 24.0,
+        ),
+        buildInputFieldContainer("original text", _textController),
+        Divider(
+          height: 24.0,
+        ),
+        buildRoundButton('Generate QR Code', Colors.redAccent, _generateQRCode),
       ],
     );
   }
 
-  Future<bool> prepareCamera() async {
+  Future<bool> _prepareCamera() async {
     setState(() {
       _isLoadingCamera = true;
     });
@@ -125,8 +137,17 @@ class CameraPageState extends State<CameraPage> {
   void onStopButtonPressed() {
   }
 
+  Future _scanQRCode() async {
+  }
+
+  void _generateQRCode() {
+  }
+
   bool _isLoadedCamera = false;
   bool _isLoadingCamera = false;
   CameraController _cameraController;
   List<CameraDescription> _cameras;
+
+  final TextEditingController _textController = new TextEditingController();
+  String _barcode = "";
 }

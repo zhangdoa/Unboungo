@@ -14,7 +14,6 @@ dependencies:
   cloud_firestore: ^0.8.2+3
   device_info: ^0.3.0
   camera:
-  path_provider: ^0.4.1
   flutter_map: ^0.1.4
 
 dev_dependencies:
