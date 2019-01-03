@@ -51,7 +51,6 @@ class CameraPageState extends State<CameraPage> {
     _cameraController = CameraController(_cameras[0], ResolutionPreset.high);
     _cameraController.initialize().then((_) {
       if (!mounted) {
-        print('camera loaded');
         return false;
       }
       setState(() {
