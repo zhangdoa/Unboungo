@@ -1,4 +1,5 @@
 import 'package:unboungo/Model.dart';
+import 'package:flutter/material.dart';
 
 abstract class UserAccountPresenter {
   void onSignedIn();
@@ -22,4 +23,8 @@ abstract class ChatMessagePresenter {
   void onLoadChatMessageComplete(List<ChatMessage> items);
 
   void onLoadChatMessageError();
+}
+
+abstract class PagePresenter {
+  Widget buildWidget();
 }

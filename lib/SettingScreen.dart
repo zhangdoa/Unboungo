@@ -3,38 +3,50 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:unboungo/Model.dart';
 import 'package:unboungo/WidgetBuilders.dart';
+import 'package:unboungo/Presenter.dart';
+import 'package:unboungo/Theme.dart';
 
-class SettingPage extends StatefulWidget {
+class SettingScreen extends StatefulWidget {
   @override
-  State createState() => new SettingPageState();
+  State createState() => new SettingScreenState();
 }
 
-class SettingPageState extends State<SettingPage>
-    with TickerProviderStateMixin {
+class SettingScreenState extends State<SettingScreen>
+    with TickerProviderStateMixin
+    implements PagePresenter {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          color: Colors.black,
-        ),
-        child: Column(
-          children: <Widget>[
-            buildCenterLogo(
-                'SETTINGS', 20.0, Icons.device_hub, Colors.redAccent),
-            buildLabel('Device info', Colors.redAccent),
-            Divider(height: 12.0),
-            _isDeviceInfosAcquired
-                ? buildDeviceInfoListView()
-                : Text('Please press the button to get device info',
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 15.0,
-                    )),
-            Divider(height: 12.0),
-            buildRoundButton(
-                'Get Device info', Colors.redAccent, getDeviceInfos),
-          ],
-        ));
+    return buildWidget();
+  }
+
+  @override
+  Widget buildWidget() {
+    return new MaterialApp(
+        title: "SettingScreen",
+        theme: kDefaultTheme,
+        home: Scaffold(
+            body: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+                child: Column(
+                  children: <Widget>[
+                    buildCenterLogo(
+                        'SETTINGS', 20.0, Icons.build, Colors.redAccent),
+                    buildLabel('Device info', Colors.redAccent),
+                    Divider(height: 12.0),
+                    _isDeviceInfosAcquired
+                        ? buildDeviceInfoListView()
+                        : Text('Please press the button to get device info',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 15.0,
+                            )),
+                    Divider(height: 12.0),
+                    buildRoundButton(
+                        'Get Device info', Colors.redAccent, getDeviceInfos),
+                  ],
+                ))));
   }
 
   Widget buildDeviceInfoListView() {

@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:unboungo/LogInPage.dart';
-import 'package:unboungo/SignUpPage.dart';
+import 'package:unboungo/AboutPage.dart';
 import 'package:unboungo/Theme.dart';
 
 class LogInScreen extends StatefulWidget {
@@ -23,7 +23,7 @@ class LogInScreenState extends State<LogInScreen> {
         home: Scaffold(
           body: new PageView(children: [
             new LogInPage(),
-            new SignUpPage(),
+            new AboutPage(),
           ], controller: _pageController, onPageChanged: onPageChanged),
         ));
   }

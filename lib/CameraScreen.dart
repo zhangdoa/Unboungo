@@ -3,20 +3,33 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:unboungo/WidgetBuilders.dart';
 import 'package:camera/camera.dart';
+import 'package:unboungo/Presenter.dart';
+import 'package:unboungo/Theme.dart';
 
-class CameraPage extends StatefulWidget {
+class CameraScreen extends StatefulWidget {
   @override
-  State createState() => new CameraPageState();
+  State createState() => new CameraScreenState();
 }
 
-class CameraPageState extends State<CameraPage> {
+class CameraScreenState extends State<CameraScreen> implements PagePresenter {
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          color: Colors.black,
-        ),
-        child: _isLoadedCamera ? _buildCameraPreview() : _buildInitialPage());
+    return buildWidget();
+  }
+
+  @override
+  Widget buildWidget() {
+    return new MaterialApp(
+        title: "CameraScreen",
+        theme: kDefaultTheme,
+        home: Scaffold(
+            body: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+                child: _isLoadedCamera
+                    ? _buildCameraPreview()
+                    : _buildInitialPage())));
   }
 
   Column _buildInitialPage() {
@@ -127,20 +140,15 @@ class CameraPageState extends State<CameraPage> {
     );
   }
 
-  void onTakePictureButtonPressed() {
-  }
+  void onTakePictureButtonPressed() {}
 
-  void onVideoRecordButtonPressed() {
-  }
+  void onVideoRecordButtonPressed() {}
 
-  void onStopButtonPressed() {
-  }
+  void onStopButtonPressed() {}
 
-  Future _scanQRCode() async {
-  }
+  Future _scanQRCode() async {}
 
-  void _generateQRCode() {
-  }
+  void _generateQRCode() {}
 
   bool _isLoadedCamera = false;
   bool _isLoadingCamera = false;

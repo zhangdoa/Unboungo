@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:unboungo/RecentChatPage.dart';
-import 'package:unboungo/FriendPage.dart';
-import 'package:unboungo/SettingPage.dart';
-import 'package:unboungo/CameraPage.dart';
-import 'package:unboungo/MapPage.dart';
+import 'package:unboungo/SettingScreen.dart';
+import 'package:unboungo/CameraScreen.dart';
+import 'package:unboungo/MapScreen.dart';
 
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
 
 import 'package:unboungo/LogInScreen.dart';
 
+import 'package:unboungo/WidgetBuilders.dart';
 import 'package:unboungo/Theme.dart';
 
 class MainScreen extends StatefulWidget {
@@ -31,25 +30,52 @@ class MainScreenState extends State<MainScreen>
         title: "Unboungo",
         theme: kDefaultTheme,
         home: Scaffold(
-          body: new PageView(children: [
-            //new RecentChatPage(),
-            new SettingPage(),
-            new CameraPage(),
-            new MapPage(),
-            //new FriendPage(),
-          ], controller: _pageController, onPageChanged: onPageChanged),
-        ));
+            body: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                ),
+                child: _buildPageSelectorGridView())));
   }
 
-  void navigationTapped(int page) {
-    _pageController.animateToPage(page,
-        duration: const Duration(milliseconds: 200), curve: Curves.ease);
+  Widget _buildPageSelectorGridView() {
+    return new GridView.count(
+      crossAxisCount: 2,
+      mainAxisSpacing: 4.0,
+      crossAxisSpacing: 4.0,
+      children: <Widget>[
+        buildPageEntryIconButton(
+            'SETTING', 18.0, Icons.build, Colors.redAccent, _goToSettingPage),
+        buildPageEntryIconButton(
+            'CAMERA', 18.0, Icons.camera, Colors.redAccent, _goToCameraPage),
+        buildPageEntryIconButton(
+            'MAP', 18.0, Icons.map, Colors.redAccent, _goToMapPage),
+      ],
+    );
   }
 
-  void onPageChanged(int page) {
-    setState(() {
-      this._page = page;
-    });
+  void _onPageEntryButtonPress() {
+    print('pressed.');
+  }
+
+  void _goToSettingPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SettingScreen()),
+    );
+  }
+
+  void _goToCameraPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CameraScreen()),
+    );
+  }
+
+  void _goToMapPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapScreen()),
+    );
   }
 
   void onItemMenuPress(Choice choice) {

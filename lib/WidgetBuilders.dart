@@ -80,23 +80,54 @@ Container buildInputFieldContainer(hintText, textController) {
   );
 }
 
-  Widget buildInputRow(hintText, textController) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: <Widget>[
-        new Expanded(
-          child: TextField(
-            controller: textController,
-            obscureText: true,
-            textAlign: TextAlign.left,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: hintText,
-              hintStyle: TextStyle(color: Colors.grey),
-            ),
+Widget buildInputRow(hintText, textController) {
+  return Row(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: <Widget>[
+      new Expanded(
+        child: TextField(
+          controller: textController,
+          obscureText: true,
+          textAlign: TextAlign.left,
+          decoration: InputDecoration(
+            border: InputBorder.none,
+            hintText: hintText,
+            hintStyle: TextStyle(color: Colors.grey),
           ),
         ),
-      ],
-    );
-  }
+      ),
+    ],
+  );
+}
+
+Widget buildPageEntryIconButton(text, fontSize, icon, iconColor, onPressed) {
+  return new Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+      ),
+      padding: EdgeInsets.all(50.0),
+      child: new Center(
+        child: Column(children: <Widget>[
+          new IconButton(
+            icon: Icon(icon, size: 40.0),
+            alignment: Alignment.center,
+            color: iconColor,
+            splashColor: Colors.white,
+            onPressed: onPressed,
+          ),
+          Divider(
+            height: 12.0,
+          ),
+          new Text(
+            text,
+            style: new TextStyle(
+              color: Colors.white,
+              fontSize: fontSize,
+              letterSpacing: 4.0,
+            ),
+            textAlign: TextAlign.center,
+          )
+        ]),
+      ));
+}
