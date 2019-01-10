@@ -21,11 +21,11 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
   Widget buildWidget() {
     return new MaterialApp(
         title: "CameraScreen",
-        theme: kDefaultTheme,
+        theme: getThemeData(),
         home: Scaffold(
             body: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color:  getThemeData().backgroundColor,
                 ),
                 child: _isLoadedCamera
                     ? _buildCameraPreview()
@@ -35,15 +35,15 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
   Column _buildInitialPage() {
     return Column(
       children: <Widget>[
-        buildCenterLogo('CAMERA PREVIEW', 20.0, Icons.camera, Colors.redAccent),
+        buildCenterLogo('CAMERA PREVIEW', 20.0, Icons.camera, getThemeData().accentColor),
         Divider(
           height: 24.0,
         ),
-        buildRoundButton('Open Camera', Colors.redAccent, _prepareCamera),
+        buildRoundButton('Open Camera', getThemeData().accentColor, _prepareCamera),
         Divider(
           height: 24.0,
         ),
-        buildRoundButton('Scan QR Code', Colors.redAccent, _scanQRCode),
+        buildRoundButton('Scan QR Code', getThemeData().accentColor, _scanQRCode),
         Divider(
           height: 24.0,
         ),
@@ -51,7 +51,7 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
         Divider(
           height: 24.0,
         ),
-        buildRoundButton('Generate QR Code', Colors.redAccent, _generateQRCode),
+        buildRoundButton('Generate QR Code', getThemeData().accentColor, _generateQRCode),
       ],
     );
   }
@@ -94,11 +94,11 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
                   child: CameraPreview(_cameraController)),
             ),
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: getThemeData().backgroundColor,
               border: Border.all(
                 color: _cameraController != null &&
                         _cameraController.value.isRecordingVideo
-                    ? Colors.redAccent
+                    ? getThemeData().accentColor
                     : Colors.grey,
                 width: 3.0,
               ),

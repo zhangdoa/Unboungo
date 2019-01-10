@@ -25,23 +25,23 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: getThemeData().backgroundColor,
       ),
       child: new Column(
         children: <Widget>[
-          buildCenterLogo('UNBOUNGO', 24.0, Icons.device_hub, Colors.redAccent),
+          buildCenterLogo('UNBOUNGO', 24.0, Icons.device_hub, getThemeData().accentColor),
           buildLoadingCircularProgressIndicator(),
-          buildLabel("EMAIL", Colors.redAccent),
+          buildLabel("EMAIL", getThemeData().accentColor),
           buildInputFieldContainer('example@example.com', _textController),
           Divider(
             height: 24.0,
           ),
-          buildLabel("PASSWORD", Colors.redAccent),
+          buildLabel("PASSWORD", getThemeData().accentColor),
           buildInputFieldContainer('********', _textController),
           Divider(
             height: 24.0,
           ),
-          buildRoundButton('Log in', Colors.redAccent, signInWithEmail),
+          buildRoundButton('Log in', getThemeData().accentColor, signInWithEmail),
           Divider(
             height: 24.0,
           ),
@@ -88,7 +88,7 @@ Widget buildLoadingCircularProgressIndicator() {
     child: Center(
       child: CircularProgressIndicator(
           valueColor:
-          AlwaysStoppedAnimation<Color>(kDefaultTheme.accentColor)),
+          AlwaysStoppedAnimation<Color>(getThemeData().accentColor)),
     ),
     color: Colors.white.withOpacity(1.0),
   )

@@ -131,3 +131,19 @@ Widget buildPageEntryIconButton(text, fontSize, icon, iconColor, onPressed) {
         ]),
       ));
 }
+
+Widget buildDropdownButton(List<String>items, onChanged, fontSize) {
+  return new DropdownButton<String>(
+      items: items.map((String value) {
+        return new DropdownMenuItem<String>(
+          value: value,
+          child: new Text(value,
+              style: new TextStyle(
+                color: Colors.black,
+                fontSize: fontSize,
+                letterSpacing: 2.0,
+              )),
+        );
+      }).toList(),
+      onChanged: onChanged);
+}

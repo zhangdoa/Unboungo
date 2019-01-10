@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:unboungo/LogInPage.dart';
@@ -19,7 +18,6 @@ class LogInScreenState extends State<LogInScreen> {
   Widget build(BuildContext context) {
     return new MaterialApp(
         title: "Unboungo",
-        theme: kDefaultTheme,
         home: Scaffold(
           body: new PageView(children: [
             new LogInPage(),

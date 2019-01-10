@@ -23,17 +23,17 @@ class SettingScreenState extends State<SettingScreen>
   Widget buildWidget() {
     return new MaterialApp(
         title: "SettingScreen",
-        theme: kDefaultTheme,
+        theme: getThemeData(),
         home: Scaffold(
             body: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: getThemeData().backgroundColor,
                 ),
                 child: Column(
                   children: <Widget>[
-                    buildCenterLogo(
-                        'SETTINGS', 20.0, Icons.build, Colors.redAccent),
-                    buildLabel('Device info', Colors.redAccent),
+                    buildCenterLogo('SETTINGS', 20.0, Icons.build,
+                        getThemeData().accentColor),
+                    buildLabel('Device info', getThemeData().accentColor),
                     Divider(height: 12.0),
                     _isDeviceInfosAcquired
                         ? buildDeviceInfoListView()
@@ -43,8 +43,8 @@ class SettingScreenState extends State<SettingScreen>
                               fontSize: 15.0,
                             )),
                     Divider(height: 12.0),
-                    buildRoundButton(
-                        'Get Device info', Colors.redAccent, getDeviceInfos),
+                    buildRoundButton('Get Device info',
+                        getThemeData().accentColor, getDeviceInfos),
                   ],
                 ))));
   }
@@ -105,7 +105,7 @@ class DeviceInfoWidget extends StatelessWidget {
       children: <Widget>[
         Text(type,
             style: TextStyle(
-              color: Colors.redAccent,
+              color: getThemeData().accentColor,
               fontSize: 15.0,
             ),
             textAlign: TextAlign.center),

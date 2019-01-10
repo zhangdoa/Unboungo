@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:unboungo/Model.dart';
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
+import 'package:unboungo/Theme.dart';
 
 class ChatScreen extends StatefulWidget {
   final String title;
@@ -33,33 +34,31 @@ class ChatScreenState extends State<ChatScreen>
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-        elevation: Theme.of(context).platform == TargetPlatform.iOS ? 0.0 : 4.0,
-      ),
-      body: new Container(
-          child: new Column(
-            children: <Widget>[
-              new Flexible(
-                child: _buildChatMessages(),
-              ),
-              new Divider(height: 1.0),
-              new Container(
-                decoration:
-                    new BoxDecoration(color: Theme.of(context).cardColor),
-                child: _buildTextComposer(),
-              ),
-            ],
+    return MaterialApp(
+        theme: getThemeData(),
+        home: Scaffold(
+          appBar: new AppBar(
+            title: new Text("Mimi nu știu"),
           ),
-          decoration: Theme.of(context).platform == TargetPlatform.iOS
-              ? new BoxDecoration(
-                  border: new Border(
-                    top: new BorderSide(color: Colors.grey[200]),
-                  ),
-                )
-              : null),
-    );
+          body: new Container(
+            decoration: new BoxDecoration(
+              color: getThemeData().backgroundColor,
+            ),
+            child: new Column(
+              children: <Widget>[
+                new Flexible(
+                  child: _buildChatMessages(),
+                ),
+                new Divider(height: 1.0),
+                new Container(
+                  decoration:
+                      new BoxDecoration(color: Theme.of(context).cardColor),
+                  child: _buildTextComposer(),
+                ),
+              ],
+            ),
+          ),
+        ));
   }
 
   @override
@@ -104,25 +103,19 @@ class ChatScreenState extends State<ChatScreen>
                   });
                 },
                 onSubmitted: _handleSubmitted,
-                decoration:
-                    new InputDecoration.collapsed(hintText: "Send a message"),
+                decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: 'Do you know who I am?'),
               ),
             ),
             new Container(
                 margin: new EdgeInsets.symmetric(horizontal: 4.0),
-                child: Theme.of(context).platform == TargetPlatform.iOS
-                    ? new CupertinoButton(
-                        child: new Text("Send"),
-                        onPressed: _isComposing
-                            ? () => _handleSubmitted(_textController.text)
-                            : null,
-                      )
-                    : new IconButton(
-                        icon: new Icon(Icons.send),
-                        onPressed: _isComposing
-                            ? () => _handleSubmitted(_textController.text)
-                            : null,
-                      )),
+                child: new IconButton(
+                  icon: new Icon(Icons.send),
+                  onPressed: _isComposing
+                      ? () => _handleSubmitted(_textController.text)
+                      : null,
+                )),
           ],
         ),
       ),
@@ -131,11 +124,11 @@ class ChatScreenState extends State<ChatScreen>
 
   void _handleSubmitted(String text) {
     _textController.clear();
+    _buildChatMessageWidgets(text);
+    _sendMessage(text: text);
     setState(() {
       _isComposing = false;
     });
-    _buildChatMessageWidgets(text);
-    _sendMessage(text: text);
   }
 
   void _buildChatMessageWidgets(String text) {

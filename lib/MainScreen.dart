@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:unboungo/SettingScreen.dart';
 import 'package:unboungo/CameraScreen.dart';
 import 'package:unboungo/MapScreen.dart';
+import 'package:unboungo/ChatScreen.dart';
 
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
@@ -28,11 +29,11 @@ class MainScreenState extends State<MainScreen>
   Widget build(BuildContext context) {
     return new MaterialApp(
         title: "Unboungo",
-        theme: kDefaultTheme,
+        theme: getThemeData(),
         home: Scaffold(
             body: Container(
                 decoration: BoxDecoration(
-                  color: Colors.black,
+                  color: getThemeData().backgroundColor,
                 ),
                 child: _buildPageSelectorGridView())));
   }
@@ -44,11 +45,13 @@ class MainScreenState extends State<MainScreen>
       crossAxisSpacing: 4.0,
       children: <Widget>[
         buildPageEntryIconButton(
-            'SETTING', 18.0, Icons.build, Colors.redAccent, _goToSettingPage),
+            'SETTING', 18.0, Icons.build, getThemeData().accentColor, _goToSettingPage),
         buildPageEntryIconButton(
-            'CAMERA', 18.0, Icons.camera, Colors.redAccent, _goToCameraPage),
+            'CAMERA', 18.0, Icons.camera, getThemeData().accentColor, _goToCameraPage),
         buildPageEntryIconButton(
-            'MAP', 18.0, Icons.map, Colors.redAccent, _goToMapPage),
+            'MAP', 18.0, Icons.map, getThemeData().accentColor, _goToMapPage),
+        buildPageEntryIconButton(
+            'CHAT', 18.0, Icons.chat, getThemeData().accentColor, _goToChatPage),
       ],
     );
   }
@@ -75,6 +78,13 @@ class MainScreenState extends State<MainScreen>
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MapScreen()),
+    );
+  }
+
+  void _goToChatPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChatScreen()),
     );
   }
 
