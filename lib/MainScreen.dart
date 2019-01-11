@@ -44,14 +44,14 @@ class MainScreenState extends State<MainScreen>
       mainAxisSpacing: 4.0,
       crossAxisSpacing: 4.0,
       children: <Widget>[
-        buildPageEntryIconButton(
-            'SETTING', 18.0, Icons.build, getThemeData().accentColor, _goToSettingPage),
-        buildPageEntryIconButton(
-            'CAMERA', 18.0, Icons.camera, getThemeData().accentColor, _goToCameraPage),
-        buildPageEntryIconButton(
-            'MAP', 18.0, Icons.map, getThemeData().accentColor, _goToMapPage),
-        buildPageEntryIconButton(
-            'CHAT', 18.0, Icons.chat, getThemeData().accentColor, _goToChatPage),
+        UBWidgetBuilder().buildPageEntryIconButton(context, 'SETTING', 18.0,
+            Icons.build, getThemeData().accentColor, _goToSettingPage),
+        UBWidgetBuilder().buildPageEntryIconButton(context, 'CAMERA', 18.0,
+            Icons.camera, getThemeData().accentColor, _goToCameraPage),
+        UBWidgetBuilder().buildPageEntryIconButton(context, 'MAP', 18.0,
+            Icons.map, getThemeData().accentColor, _goToMapPage),
+        UBWidgetBuilder().buildPageEntryIconButton(context, 'CHAT', 18.0,
+            Icons.chat, getThemeData().accentColor, _goToChatPage),
       ],
     );
   }

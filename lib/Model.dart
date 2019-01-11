@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
 //import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
@@ -13,6 +14,7 @@ class UserAccountManager {
       new UserAccountManager._internal();
 
   final _googleSignIn = new GoogleSignIn();
+
   //final _facebookSignIn = new FacebookLogin();
   final _firebaseAuth = new FirebaseAuth.fromApp(FirebaseApp.instance);
   final _firestore = Firestore.instance;
@@ -181,33 +183,38 @@ class FirebaseChatMessageRepository implements ChatMessageRepository {
     return true;
   }
 }
+
 class UbUtilities {
   Future<Map<String, String>> getAndroidDeviceInfo() async {
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
     Map<String, String> results = new Map();
-    results.putIfAbsent('AndroidID', ()=> androidInfo.androidId);
-    results.putIfAbsent('Board', ()=> androidInfo.board);
-    results.putIfAbsent('Bootloader', ()=> androidInfo.bootloader);
-    results.putIfAbsent('Brand', ()=> androidInfo.brand);
-    results.putIfAbsent('Device', ()=> androidInfo.device);
-    results.putIfAbsent('Display', ()=> androidInfo.display);
-    results.putIfAbsent('Fingerprint' , ()=> androidInfo.fingerprint);
-    results.putIfAbsent('Hardware' , ()=> androidInfo.hardware);
-    results.putIfAbsent('Host' , ()=> androidInfo.host);
-    results.putIfAbsent('Is Physical Device' , ()=> androidInfo.isPhysicalDevice.toString());
-    results.putIfAbsent('Manufacturer' , ()=> androidInfo.manufacturer);
-    results.putIfAbsent('Model' , ()=> androidInfo.model);
-    results.putIfAbsent('Product' , ()=> androidInfo.product);
-    androidInfo.supported32BitAbis.forEach((String val)=> results.putIfAbsent('Supported 32-Bit Abis',()=> val));
-    androidInfo.supported64BitAbis.forEach((String val)=> results.putIfAbsent('Supported 64-Bit Abis',()=> val));
-    results.putIfAbsent('Tags' , ()=> androidInfo.tags);
-    results.putIfAbsent('Type' , ()=> androidInfo.type);
-    results.putIfAbsent('Base OS' , ()=> androidInfo.version.baseOS);
-    results.putIfAbsent('Codename' , ()=> androidInfo.version.codename);
-    results.putIfAbsent('Incremental' , ()=> androidInfo.version.incremental);
-    results.putIfAbsent('Release' , ()=> androidInfo.version.release);
-    results.putIfAbsent('SecurityPatch' , ()=> androidInfo.version.securityPatch);
+    results.putIfAbsent('AndroidID', () => androidInfo.androidId);
+    results.putIfAbsent('Board', () => androidInfo.board);
+    results.putIfAbsent('Bootloader', () => androidInfo.bootloader);
+    results.putIfAbsent('Brand', () => androidInfo.brand);
+    results.putIfAbsent('Device', () => androidInfo.device);
+    results.putIfAbsent('Display', () => androidInfo.display);
+    results.putIfAbsent('Fingerprint', () => androidInfo.fingerprint);
+    results.putIfAbsent('Hardware', () => androidInfo.hardware);
+    results.putIfAbsent('Host', () => androidInfo.host);
+    results.putIfAbsent(
+        'Is Physical Device', () => androidInfo.isPhysicalDevice.toString());
+    results.putIfAbsent('Manufacturer', () => androidInfo.manufacturer);
+    results.putIfAbsent('Model', () => androidInfo.model);
+    results.putIfAbsent('Product', () => androidInfo.product);
+    androidInfo.supported32BitAbis.forEach((String val) =>
+        results.putIfAbsent('Supported 32-Bit Abis', () => val));
+    androidInfo.supported64BitAbis.forEach((String val) =>
+        results.putIfAbsent('Supported 64-Bit Abis', () => val));
+    results.putIfAbsent('Tags', () => androidInfo.tags);
+    results.putIfAbsent('Type', () => androidInfo.type);
+    results.putIfAbsent('Base OS', () => androidInfo.version.baseOS);
+    results.putIfAbsent('Codename', () => androidInfo.version.codename);
+    results.putIfAbsent('Incremental', () => androidInfo.version.incremental);
+    results.putIfAbsent('Release', () => androidInfo.version.release);
+    results.putIfAbsent(
+        'SecurityPatch', () => androidInfo.version.securityPatch);
     return results;
   }
 

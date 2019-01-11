@@ -16,22 +16,19 @@ class AboutPageState extends State<AboutPage> {
         decoration: BoxDecoration(
           color: getThemeData().backgroundColor,
         ),
-        child: Column(
-          children: <Widget>[
-            buildCenterLogo(
-            'ABOUT', 20.0, Icons.adb, getThemeData().accentColor),
-            Divider(height: 12.0),
-            Text(
-              "Copyright (c) 2019 zhangdoa",
-              style: new TextStyle(
-                color: Colors.white,
-                fontSize: 18.0,
-                letterSpacing: 1.0,
-              ),
-              textAlign: TextAlign.center,
-            )
-          ]
-        )
-    );
+        child: Column(children: <Widget>[
+          UBWidgetBuilder().buildCenterLogo(
+              context, 'ABOUT', 20.0, Icons.adb, getThemeData().accentColor),
+          UBWidgetBuilder().buildDivider(context, 12.0),
+          Text(
+            "Copyright (c) 2019 zhangdoa",
+            style: new TextStyle(
+              color: Colors.white,
+              fontSize: 18.0,
+              letterSpacing: 1.0,
+            ),
+            textAlign: TextAlign.center,
+          )
+        ]));
   }
 }

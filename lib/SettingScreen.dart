@@ -31,20 +31,23 @@ class SettingScreenState extends State<SettingScreen>
                 ),
                 child: Column(
                   children: <Widget>[
-                    buildCenterLogo('SETTINGS', 20.0, Icons.build,
-                        getThemeData().accentColor),
-                    buildLabel('Device info', getThemeData().accentColor),
-                    Divider(height: 12.0),
+                    UBWidgetBuilder().buildCenterLogo(context, 'SETTINGS', 20.0,
+                        Icons.build, getThemeData().accentColor),
+                    UBWidgetBuilder().buildLabel(
+                        context, 'Device info', getThemeData().accentColor),
+                    UBWidgetBuilder().buildDivider(context, 12.0),
                     _isDeviceInfosAcquired
                         ? buildDeviceInfoListView()
-                        : Text('Please press the button to get device info',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 15.0,
-                            )),
-                    Divider(height: 12.0),
-                    buildRoundButton('Get Device info',
-                        getThemeData().accentColor, getDeviceInfos),
+                        : UBWidgetBuilder().buildSplitText(
+                            context,
+                            'Please press the button to get device info',
+                            Colors.grey),
+                    UBWidgetBuilder().buildDivider(context, 12.0),
+                    UBWidgetBuilder().buildRoundButton(
+                        context,
+                        'Get Device info',
+                        getThemeData().accentColor,
+                        getDeviceInfos),
                   ],
                 ))));
   }
@@ -118,9 +121,7 @@ class DeviceInfoWidget extends StatelessWidget {
               textAlign: TextAlign.center),
           padding: const EdgeInsets.all(2.0),
         ),
-        Divider(
-          height: 12.0,
-        )
+        UBWidgetBuilder().buildDivider(context, 12.0)
       ],
     );
   }

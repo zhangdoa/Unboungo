@@ -34,13 +34,8 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
         home: Scaffold(
             appBar: AppBar(actions: <Widget>[
               Row(children: <Widget>[
-                Text("Choose a map provider",
-                    style: new TextStyle(
-                      color: getThemeData().backgroundColor,
-                      fontSize: 16.0,
-                      letterSpacing: 0.0,
-                    )),
-                buildDropdownButton(
+                UBWidgetBuilder().buildAppBarText(context, "Map provider", getThemeData().backgroundColor),
+                UBWidgetBuilder().buildDropdownButton(context,
                     _mapProvider.keys.toList(), onMapProviderChanged, 16.0)
               ])
             ]),
@@ -56,11 +51,13 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
   Column _buildInitialPage() {
     return Column(
       children: <Widget>[
-        buildCenterLogo('MAP', 20.0, Icons.map, getThemeData().accentColor),
+        UBWidgetBuilder().buildCenterLogo(
+            context, 'MAP', 20.0, Icons.map, getThemeData().accentColor),
         Divider(
           height: 24.0,
         ),
-        buildRoundButton('Open Map', getThemeData().accentColor, _prepareMap),
+        UBWidgetBuilder().buildRoundButton(
+            context, 'Open Map', getThemeData().accentColor, _prepareMap),
       ],
     );
   }
@@ -83,7 +80,8 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
         ),
         layers: [
           TileLayerOptions(
-              urlTemplate:_mapProvider[_currentMapProvider], subdomains: ['a', 'b', 'c']),
+              urlTemplate: _mapProvider[_currentMapProvider],
+              subdomains: ['a', 'b', 'c']),
           MarkerLayerOptions(
             markers: [
               Marker(
@@ -94,7 +92,11 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
                       child: new GestureDetector(
                           onTap: () {
                             _scaffoldKey.currentState.showSnackBar(new SnackBar(
-                              content: new Text("I am here in (" + _pos.latitude.toString() + ", " + _pos.longitude.toString() + ")!"),
+                              content: new Text("I am here in (" +
+                                  _pos.latitude.toString() +
+                                  ", " +
+                                  _pos.longitude.toString() +
+                                  ")!"),
                             ));
                           },
                           child: new FlutterLogo(colors: Colors.red)))),
@@ -102,7 +104,10 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
           ),
         ],
       )),
-      buildLabel("Using map data from: " + _currentMapProvider, getThemeData().accentColor)
+      UBWidgetBuilder().buildLabel(
+          context,
+          "Using map data from: " + _currentMapProvider,
+          getThemeData().accentColor)
     ]);
   }
 

@@ -51,6 +51,7 @@ class FriendListInteractor {
     });
   }
 }
+
 class RecentChatInteractor {
   RecentChatPresenter _presenter;
   RecentChatRepository _repository;
@@ -71,7 +72,6 @@ class RecentChatInteractor {
     });
   }
 }
-
 
 class ChatMessageInteractor {
   ChatMessagePresenter _presenter;

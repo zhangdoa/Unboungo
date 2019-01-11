@@ -25,7 +25,7 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
         home: Scaffold(
             body: Container(
                 decoration: BoxDecoration(
-                  color:  getThemeData().backgroundColor,
+                  color: getThemeData().backgroundColor,
                 ),
                 child: _isLoadedCamera
                     ? _buildCameraPreview()
@@ -35,23 +35,32 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
   Column _buildInitialPage() {
     return Column(
       children: <Widget>[
-        buildCenterLogo('CAMERA PREVIEW', 20.0, Icons.camera, getThemeData().accentColor),
-        Divider(
-          height: 24.0,
+        UBWidgetBuilder().buildCenterLogo(context, 'CAMERA PREVIEW', 20.0,
+            Icons.camera, getThemeData().accentColor),
+        UBWidgetBuilder().buildDivider(
+          context,
+          24.0,
         ),
-        buildRoundButton('Open Camera', getThemeData().accentColor, _prepareCamera),
-        Divider(
-          height: 24.0,
+        UBWidgetBuilder().buildRoundButton(
+            context, 'Open Camera', getThemeData().accentColor, _prepareCamera),
+        UBWidgetBuilder().buildDivider(
+          context,
+          24.0,
         ),
-        buildRoundButton('Scan QR Code', getThemeData().accentColor, _scanQRCode),
-        Divider(
-          height: 24.0,
+        UBWidgetBuilder().buildRoundButton(
+            context, 'Scan QR Code', getThemeData().accentColor, _scanQRCode),
+        UBWidgetBuilder().buildDivider(
+          context,
+          24.0,
         ),
-        buildInputFieldContainer("original text", _textController),
-        Divider(
-          height: 24.0,
+        UBWidgetBuilder().buildInputFieldContainer(
+            context, "original text", _textController),
+        UBWidgetBuilder().buildDivider(
+          context,
+          24.0,
         ),
-        buildRoundButton('Generate QR Code', getThemeData().accentColor, _generateQRCode),
+        UBWidgetBuilder().buildRoundButton(context, 'Generate QR Code',
+            getThemeData().accentColor, _generateQRCode),
       ],
     );
   }
