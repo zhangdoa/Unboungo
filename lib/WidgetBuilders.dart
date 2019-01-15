@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class UBWidgetBuilder {
   static final UBWidgetBuilder _singleton = new UBWidgetBuilder._internal();
@@ -206,5 +207,12 @@ class UBWidgetBuilder {
           );
         }).toList(),
         onChanged: onChanged);
+  }
+
+  Widget buildQRImage(context, text, size, foregroundColor) {
+    return new QrImage(
+        data: text,
+        size: size * _getDevicePixelRatio(context),
+        foregroundColor: foregroundColor);
   }
 }

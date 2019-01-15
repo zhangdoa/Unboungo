@@ -32,13 +32,14 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
         title: "MapScreen",
         theme: getThemeData(),
         home: Scaffold(
-            appBar: AppBar(actions: <Widget>[
-              Row(children: <Widget>[
-                UBWidgetBuilder().buildAppBarText(context, "Map provider", getThemeData().backgroundColor),
+            appBar: AppBar(
+              title: UBWidgetBuilder().buildAppBarText(
+                  context, "Map provider", getThemeData().backgroundColor),
+              actions: <Widget>[
                 UBWidgetBuilder().buildDropdownButton(context,
                     _mapProvider.keys.toList(), onMapProviderChanged, 16.0)
-              ])
-            ]),
+              ],
+            ),
             key: _scaffoldKey,
             body: Container(
                 decoration: BoxDecoration(
@@ -76,7 +77,7 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
           child: FlutterMap(
         options: MapOptions(
           center: LatLng(_pos.latitude, _pos.longitude),
-          zoom: 1.0,
+          zoom: 4.0,
         ),
         layers: [
           TileLayerOptions(

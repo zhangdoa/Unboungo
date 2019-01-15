@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:unboungo/WidgetBuilders.dart';
-import 'package:camera/camera.dart';
 import 'package:unboungo/Presenter.dart';
 import 'package:unboungo/Theme.dart';
+
+import 'package:camera/camera.dart';
+import 'package:barcode_scan/barcode_scan.dart';
 
 class CameraScreen extends StatefulWidget {
   @override
@@ -47,14 +49,21 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
           context,
           24.0,
         ),
+        UBWidgetBuilder().buildSplitText(context, _QRCodeToText, getThemeData().accentColor),
         UBWidgetBuilder().buildRoundButton(
             context, 'Scan QR Code', getThemeData().accentColor, _scanQRCode),
         UBWidgetBuilder().buildDivider(
           context,
           24.0,
         ),
-        UBWidgetBuilder().buildInputFieldContainer(
-            context, "original text", _textController),
+        UBWidgetBuilder()
+            .buildQRImage(context, _textToQRCode, 120, Colors.white),
+        UBWidgetBuilder().buildDivider(
+          context,
+          24.0,
+        ),
+        UBWidgetBuilder()
+            .buildInputFieldContainer(context, _textToQRCode, _textController),
         UBWidgetBuilder().buildDivider(
           context,
           24.0,
@@ -155,9 +164,16 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
 
   void onStopButtonPressed() {}
 
-  Future _scanQRCode() async {}
+  Future _scanQRCode() async {
+    String barcode = await BarcodeScanner.scan();
+    setState(() => this._QRCodeToText = barcode);
+  }
 
-  void _generateQRCode() {}
+  void _generateQRCode() {
+    setState(() {
+
+    });
+  }
 
   bool _isLoadedCamera = false;
   bool _isLoadingCamera = false;
@@ -165,5 +181,6 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
   List<CameraDescription> _cameras;
 
   final TextEditingController _textController = new TextEditingController();
-  String _barcode = "";
+  String _textToQRCode = "original text";
+  String _QRCodeToText = "";
 }
