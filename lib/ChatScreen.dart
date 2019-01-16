@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'package:unboungo/WidgetBuilders.dart';
 import 'package:unboungo/Model.dart';
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
@@ -133,6 +134,8 @@ class ChatScreenState extends State<ChatScreen>
 
   void _buildChatMessageWidgets(String text) {
     ChatMessageWidget chatMessageWidget = new ChatMessageWidget(
+      userFullName: "TestDroid",
+      isLocalUser: true,
       text: text,
       animationController: new AnimationController(
         duration: new Duration(milliseconds: 200),
@@ -156,11 +159,16 @@ class ChatScreenState extends State<ChatScreen>
 }
 
 class ChatMessageWidget extends StatelessWidget {
-  ChatMessageWidget({this.text, this.animationController});
+  ChatMessageWidget(
+      {this.userFullName,
+      this.isLocalUser,
+      this.text,
+      this.animationController});
 
+  final String userFullName;
+  final bool isLocalUser;
   final String text;
   final AnimationController animationController;
-  String _userFullName = UserData.fullName;
 
   @override
   Widget build(BuildContext context) {
@@ -169,28 +177,53 @@ class ChatMessageWidget extends StatelessWidget {
             parent: animationController, curve: Curves.easeOut),
         axisAlignment: 0.0,
         child: new Container(
-          margin: const EdgeInsets.symmetric(vertical: 2.0),
+          margin: const EdgeInsets.symmetric(vertical: 6.0),
           child: new Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              new Expanded(
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: <Widget>[
-                    new Text(_userFullName,
-                        style: Theme.of(context).textTheme.subhead),
-                    new Container(
-                      child: new Text(text),
-                    ),
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: isLocalUser
+                ? <Widget>[
+                    buildSingleChatMessage(),
+                    buildUserAvatar(),
+                  ]
+                : <Widget>[
+                    buildUserAvatar(),
+                    buildSingleChatMessage(),
                   ],
-                ),
-              ),
-              new Container(
-                margin: const EdgeInsets.only(left: 8.0),
-                child: new CircleAvatar(child: new Text(_userFullName[0])),
-              ),
-            ],
           ),
         ));
+  }
+
+  Widget buildSingleChatMessage() {
+    return new Expanded(
+        child: new Column(
+      crossAxisAlignment:
+          isLocalUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      children: <Widget>[
+        new Text(userFullName,
+            style: TextStyle(color: Colors.grey, fontSize: 12.0)),
+        Container(
+          decoration: ShapeDecoration(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)),
+            color: getThemeData().accentColor,
+          ),
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          child: new Container(
+            margin: const EdgeInsets.fromLTRB(12.0, 12.0, 6.0, 6.0),
+            child: new Text(
+              text,
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
+            ),
+          ),
+        )
+      ],
+    ));
+  }
+
+  Widget buildUserAvatar() {
+    return new Container(
+      margin: const EdgeInsets.fromLTRB(4.0, 4.0, 0.0, 0.0),
+      child: new CircleAvatar(child: new Text(userFullName[0])),
+    );
   }
 }

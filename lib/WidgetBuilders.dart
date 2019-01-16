@@ -125,7 +125,7 @@ class UBWidgetBuilder {
     );
   }
 
-  Container buildInputFieldContainer(context, hintText, textController) {
+  Container buildInputFieldContainer(context, hintText, textController, onTap, onSubmitted, onChanged, obscureText) {
     return new Container(
       alignment: Alignment.center,
       margin: EdgeInsets.fromLTRB(40.0 * _getDevicePixelRatio(context), 0.0,
@@ -136,11 +136,11 @@ class UBWidgetBuilder {
               color: Colors.redAccent, width: 1.0, style: BorderStyle.solid),
         ),
       ),
-      child: buildInputRow(hintText, textController),
+      child: buildInputRow(hintText, textController, onTap, onSubmitted, onChanged, obscureText),
     );
   }
 
-  Widget buildInputRow(hintText, textController) {
+  Widget buildInputRow(hintText, textController, onTap, onSubmitted, onChanged, obscureText) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -148,7 +148,11 @@ class UBWidgetBuilder {
         new Expanded(
           child: TextField(
             controller: textController,
-            obscureText: true,
+            onTap: onTap,
+            onSubmitted: onSubmitted,
+            onChanged: onChanged,
+            style: TextStyle(color: Colors.white),
+            obscureText: obscureText,
             textAlign: TextAlign.left,
             decoration: InputDecoration(
               border: InputBorder.none,

@@ -42,34 +42,50 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
           UBWidgetBuilder()
               .buildLabel(context, "EMAIL", getThemeData().accentColor),
           UBWidgetBuilder().buildInputFieldContainer(
-              context, 'example@example.com', _textController),
+              context,
+              'example@example.com',
+              _textController,
+              _onTap,
+              _onSubmitted,
+              _onChanged,
+              false),
           UBWidgetBuilder().buildDivider(context, 24.0),
           UBWidgetBuilder()
               .buildLabel(context, "PASSWORD", getThemeData().accentColor),
-          UBWidgetBuilder()
-              .buildInputFieldContainer(context, '********', _textController),
+          UBWidgetBuilder().buildInputFieldContainer(context, '********',
+              _textController, _onTap, _onSubmitted, _onChanged, true),
           UBWidgetBuilder().buildDivider(context, 24.0),
-          UBWidgetBuilder().buildRoundButton(
-              context, 'Log in', getThemeData().accentColor, signInWithEmail),
-          UBWidgetBuilder().buildDivider(context, 24.0),
-          UBWidgetBuilder()
-              .buildSplitText(context, "OR CONNECT WITH", Colors.grey),
-          UBWidgetBuilder().buildDivider(context, 24.0),
-          Row(
-            children: <Widget>[
-              UBWidgetBuilder().buildRowButtonPadder(context, 8.0, 0.25),
-              Expanded(
-                child: UBWidgetBuilder().buildRoundButton(
-                    context, 'Google', Color(0xffdd4b39), signInWithGoogle),
-              ),
-              UBWidgetBuilder().buildRowButtonPadder(context, 8.0, 0.25),
-              Expanded(
-                child: UBWidgetBuilder().buildRoundButton(
-                    context, 'Facebook', Color(0Xff3B5998), signInWithFacebook),
-              ),
-              UBWidgetBuilder().buildRowButtonPadder(context, 8.0, 0.25),
-            ],
-          )
+          _isTyping
+              ? UBWidgetBuilder().buildDivider(
+                  context,
+                  24.0,
+                )
+              : Column(children: <Widget>[
+                  UBWidgetBuilder().buildRoundButton(context, 'Log in',
+                      getThemeData().accentColor, signInWithEmail),
+                  UBWidgetBuilder().buildDivider(context, 24.0),
+                  UBWidgetBuilder()
+                      .buildSplitText(context, "OR CONNECT WITH", Colors.grey),
+                  UBWidgetBuilder().buildDivider(context, 24.0),
+                  Row(
+                    children: <Widget>[
+                      UBWidgetBuilder()
+                          .buildRowButtonPadder(context, 8.0, 0.25),
+                      Expanded(
+                        child: UBWidgetBuilder().buildRoundButton(context,
+                            'Google', Color(0xffdd4b39), signInWithGoogle),
+                      ),
+                      UBWidgetBuilder()
+                          .buildRowButtonPadder(context, 8.0, 0.25),
+                      Expanded(
+                        child: UBWidgetBuilder().buildRoundButton(context,
+                            'Facebook', Color(0Xff3B5998), signInWithFacebook),
+                      ),
+                      UBWidgetBuilder()
+                          .buildRowButtonPadder(context, 8.0, 0.25),
+                    ],
+                  )
+                ]),
         ],
       ),
     );
@@ -135,8 +151,25 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
     });
   }
 
+  void _onTap() {
+    setState(() {
+      _isTyping = true;
+    });
+  }
+
+  void _onSubmitted(text) {
+    setState(() {
+      _isTyping = false;
+    });
+  }
+
+  void _onChanged(text) {
+    setState(() {});
+  }
+
   final TextEditingController _textController = new TextEditingController();
 
   bool _isLoading = false;
+  bool _isTyping = false;
   UserAccountInteractor _interactor;
 }

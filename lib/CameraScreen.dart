@@ -34,11 +34,16 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
                     : _buildInitialPage())));
   }
 
-  Column _buildInitialPage() {
+  Widget _buildInitialPage() {
     return Column(
       children: <Widget>[
-        UBWidgetBuilder().buildCenterLogo(context, 'CAMERA PREVIEW', 20.0,
-            Icons.camera, getThemeData().accentColor),
+        _isTyping
+            ? UBWidgetBuilder().buildDivider(
+                context,
+                24.0,
+              )
+            : UBWidgetBuilder().buildCenterLogo(context, 'CAMERA PREVIEW',
+                (20.0), Icons.camera, getThemeData().accentColor),
         UBWidgetBuilder().buildDivider(
           context,
           24.0,
@@ -49,7 +54,8 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
           context,
           24.0,
         ),
-        UBWidgetBuilder().buildSplitText(context, _QRCodeToText, getThemeData().accentColor),
+        UBWidgetBuilder()
+            .buildSplitText(context, _QRCodeToText, getThemeData().accentColor),
         UBWidgetBuilder().buildRoundButton(
             context, 'Scan QR Code', getThemeData().accentColor, _scanQRCode),
         UBWidgetBuilder().buildDivider(
@@ -62,14 +68,8 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
           context,
           24.0,
         ),
-        UBWidgetBuilder()
-            .buildInputFieldContainer(context, _textToQRCode, _textController),
-        UBWidgetBuilder().buildDivider(
-          context,
-          24.0,
-        ),
-        UBWidgetBuilder().buildRoundButton(context, 'Generate QR Code',
-            getThemeData().accentColor, _generateQRCode),
+        UBWidgetBuilder().buildInputFieldContainer(context, _hintText,
+            _textController, _onTap, _onSubmitted, _onChanged, false)
       ],
     );
   }
@@ -169,10 +169,20 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
     setState(() => this._QRCodeToText = barcode);
   }
 
-  void _generateQRCode() {
+  void _onTap() {
     setState(() {
-
+      _isTyping = true;
     });
+  }
+
+  void _onSubmitted(text) {
+    setState(() {
+      _textToQRCode = text;
+      _isTyping = false;
+    });
+  }
+
+  void _onChanged(text) {
   }
 
   bool _isLoadedCamera = false;
@@ -181,6 +191,8 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
   List<CameraDescription> _cameras;
 
   final TextEditingController _textController = new TextEditingController();
-  String _textToQRCode = "original text";
+  bool _isTyping = false;
+  String _hintText = "please enter the original text to encode";
+  String _textToQRCode = "Unboungo";
   String _QRCodeToText = "";
 }
