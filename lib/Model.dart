@@ -11,7 +11,7 @@ import 'package:device_info/device_info.dart';
 
 class UserAccountManager {
   static final UserAccountManager _singleton =
-      new UserAccountManager._internal();
+  new UserAccountManager._internal();
 
   final _googleSignIn = new GoogleSignIn();
 
@@ -25,14 +25,36 @@ class UserAccountManager {
 
   UserAccountManager._internal();
 
-  Future<bool> signInWithEmail() async {
+  Future<bool> signInWithEmail(userEmail, userPassword) async {
+    FirebaseUser firebaseUser;
+    try {
+      firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
+          email: userEmail, password: userPassword);
+    } catch (e) {
+      print(e);
+    }
+
+    if (firebaseUser == null) {
+      firebaseUser = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: userEmail, password: userPassword);
+      UserUpdateInfo info = new UserUpdateInfo();
+      info.displayName = userEmail;
+      await firebaseUser.updateProfile(info);
+      await firebaseUser.reload();
+      firebaseUser = await _firebaseAuth.currentUser();
+    }
+
+    await validateFirebaseUser(firebaseUser);
+
+    await saveFirebaseUser(firebaseUser);
+
     return true;
   }
 
   Future<bool> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+    await googleUser.authentication;
 
     final FirebaseUser firebaseUser = await _firebaseAuth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
@@ -41,6 +63,12 @@ class UserAccountManager {
 
     await validateFirebaseUser(firebaseUser);
 
+    await saveFirebaseUser(firebaseUser);
+
+    return true;
+  }
+
+  Future saveFirebaseUser(FirebaseUser firebaseUser) async {
     if (firebaseUser != null) {
       // Check is already sign up
       final QuerySnapshot result = await _firestore
@@ -57,8 +85,7 @@ class UserAccountManager {
 
     UserData.fullName = firebaseUser.displayName;
     UserData.email = firebaseUser.email;
-
-    return true;
+    UserData._uid = firebaseUser.uid;
   }
 
   Future validateFirebaseUser(FirebaseUser firebaseUser) async {
@@ -94,12 +121,49 @@ class UserAccountManager {
 
     return true;
   }
+
+  Future<List<RecentChatData>> fetchRecentChatData() async {
+    final QuerySnapshot result = await _firestore
+        .collection('users')
+        .where('id', isEqualTo: UserData._uid)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = result.documents;
+    documents.forEach((documentSnapshot) {
+      print(documentSnapshot.toString());
+    });
+  }
+
+  Future<List<FriendData>> fetchFriendData() async {
+    final QuerySnapshot result = await _firestore
+        .collection('users')
+        .where('id', isEqualTo: UserData._uid)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = result.documents;
+    documents.forEach((documentSnapshot) {
+      print(documentSnapshot.toString());
+    });
+  }
+
+  Future<List<String>> searchFriend(name) async {
+    final QuerySnapshot result = await _firestore
+        .collection('users')
+        .where('nickname', isEqualTo: name)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = result.documents;
+    List<String> suitableFriends = [];
+    if (documents.length != 0) {
+      documents.forEach((snapshot) {
+        suitableFriends.add(snapshot.data.toString());
+      });
+    }
+  }
 }
 
 class UserData {
   static final UserData _singleton = new UserData._internal();
   static String fullName;
   static String email;
+  static String _uid;
 
   factory UserData() {
     return _singleton;
@@ -108,19 +172,19 @@ class UserData {
   UserData._internal();
 }
 
-class FirendData {
+class FriendData {
   final String fullName;
-  final String email;
 
-  const FirendData({this.fullName, this.email});
+  const FriendData({this.fullName});
 
-  FirendData.fromMap(Map<String, dynamic> map)
-      : fullName = "${map['name']['first']} ${map['name']['last']}",
-        email = map['email'];
+  FriendData.fromMap(Map<String, dynamic> map)
+      : fullName = "${map['name']['first']} ${map['name']['last']}";
 }
 
 abstract class FriendRepository {
-  Future<List<FirendData>> fetch();
+  Future<List<FriendData>> fetch();
+
+  Future<List<String>> searchFriend(name);
 }
 
 class FetchDataException implements Exception {
@@ -133,11 +197,16 @@ class FetchDataException implements Exception {
   }
 }
 
-class RandomUserRepository implements FriendRepository {
-  static const _kRandomUserUrl = 'http://api.randomuser.me/?results=4';
-  final JsonDecoder _decoder = new JsonDecoder();
+class FirebaseFriendRepository implements FriendRepository {
+  Future<List<String>> searchFriend(name) async {
+    var result = await UserAccountManager().searchFriend(name);
+    return result;
+  }
 
-  Future<List<FirendData>> fetch() {}
+  Future<List<FriendData>> fetch() async {
+    var result = await UserAccountManager().fetchFriendData();
+    return result;
+  }
 }
 
 class RecentChatData {
@@ -156,7 +225,10 @@ abstract class RecentChatRepository {
 }
 
 class FirebaseRecentChatRepository implements RecentChatRepository {
-  Future<List<RecentChatData>> fetch() {}
+  Future<List<RecentChatData>> fetch() async {
+    var result = await UserAccountManager().fetchRecentChatData();
+    return result;
+  }
 }
 
 class ChatMessage {

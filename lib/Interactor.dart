@@ -6,8 +6,8 @@ class UserAccountInteractor {
 
   UserAccountInteractor(this._presenter) {}
 
-  Future<bool> signInWithEmail() async {
-    await UserAccountManager().signInWithEmail();
+  Future<bool> signInWithEmail(userEmail, userPassword) async {
+    await UserAccountManager().signInWithEmail(userEmail, userPassword);
     _presenter.onSignedIn();
     return true;
   }
@@ -31,12 +31,12 @@ class UserAccountInteractor {
   }
 }
 
-class FriendListInteractor {
+class FriendInteractor {
   FriendDataPresenter _presenter;
   FriendRepository _repository;
 
-  FriendListInteractor(this._presenter) {
-    _repository = new RandomUserRepository();
+  FriendInteractor(this._presenter) {
+    _repository = new FirebaseFriendRepository();
   }
 
   void loadFriends() {
@@ -49,6 +49,11 @@ class FriendListInteractor {
       print(onError);
       _presenter.onLoadFriendDataError();
     });
+  }
+
+  Future<List<String>> searchFriend(name) async {
+  var result = await _repository.searchFriend(name);
+  return result;
   }
 }
 

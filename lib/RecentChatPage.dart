@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'package:unboungo/Theme.dart';
+import 'package:unboungo/WidgetBuilders.dart';
 import 'package:unboungo/ChatScreen.dart';
 import 'package:unboungo/Model.dart';
 import 'package:unboungo/Interactor.dart';
@@ -26,25 +28,29 @@ class RecentChatPageState extends State<RecentChatPage>
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Center(
-          child: Padding(
-              padding: const EdgeInsets.only(left: 16.0, right: 16.0),
-              child: CircularProgressIndicator()));
-    } else {
-      if (_recentChatDatas.length == 0) {
-        return new Text("Find a friend and let's chat!");
-      } else {
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: _recentChatDatas.length,
-          itemBuilder: (context, index) {
-            return RecentChatWidget(_recentChatDatas[index].lastMessage,
-                _recentChatDatas[index].userName);
-          },
-        );
-      }
-    }
+    return Container(
+        decoration: BoxDecoration(
+          color: getThemeData().backgroundColor,
+        ),
+        child: _isLoading
+            ? Center(
+                child: Padding(
+                    padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+                    child: UBWidgetBuilder()
+                        .buildLoadingCircularProgressIndicator(
+                            getThemeData().accentColor)))
+            : _recentChatDatas == null
+                ? Center(
+                    child: UBWidgetBuilder().buildSplitText(
+                        context, "Find a friend and let's chat!", Colors.grey))
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: _recentChatDatas.length,
+                    itemBuilder: (context, index) {
+                      RecentChatWidget(_recentChatDatas[index].lastMessage,
+                          _recentChatDatas[index].userName);
+                    },
+                  ));
   }
 
   @override

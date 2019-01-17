@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:unboungo/SettingScreen.dart';
 import 'package:unboungo/CameraScreen.dart';
 import 'package:unboungo/MapScreen.dart';
-import 'package:unboungo/ChatScreen.dart';
+import 'package:unboungo/IMScreen.dart';
 
 import 'package:unboungo/Interactor.dart';
 import 'package:unboungo/Presenter.dart';
@@ -57,7 +57,6 @@ class MainScreenState extends State<MainScreen>
   }
 
   void _onPageEntryButtonPress() {
-    print('pressed.');
   }
 
   void _goToSettingPage() {
@@ -84,7 +83,7 @@ class MainScreenState extends State<MainScreen>
   void _goToChatPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatScreen()),
+      MaterialPageRoute(builder: (context) => IMScreen()),
     );
   }
 

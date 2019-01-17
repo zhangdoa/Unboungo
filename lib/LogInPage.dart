@@ -38,29 +38,45 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
         children: <Widget>[
           UBWidgetBuilder().buildCenterLogo(context, 'UNBOUNGO', 24.0,
               Icons.device_hub, getThemeData().accentColor),
-          buildLoadingCircularProgressIndicator(),
-          UBWidgetBuilder()
-              .buildLabel(context, "EMAIL", getThemeData().accentColor),
+          _isLoading
+              ? UBWidgetBuilder().buildLoadingCircularProgressIndicator(getThemeData().accentColor)
+              : UBWidgetBuilder().buildDivider(context, 32.0),
+          _isEmailValid
+              ? UBWidgetBuilder()
+                  .buildLabel(context, "EMAIL", getThemeData().accentColor)
+              : UBWidgetBuilder()
+                  .buildWarningText(context, "invalid E-mail address"),
           UBWidgetBuilder().buildInputFieldContainer(
               context,
               'example@example.com',
-              _textController,
-              _onTap,
-              _onSubmitted,
-              _onChanged,
+              _emailTextController,
+              _onEmailInputFieldTap,
+              _onEmailInputFieldSubmitted,
+              _onEmailInputFieldChanged,
               false),
           UBWidgetBuilder().buildDivider(context, 24.0),
-          UBWidgetBuilder()
-              .buildLabel(context, "PASSWORD", getThemeData().accentColor),
-          UBWidgetBuilder().buildInputFieldContainer(context, '********',
-              _textController, _onTap, _onSubmitted, _onChanged, true),
-          UBWidgetBuilder().buildDivider(context, 24.0),
+          _isPasswordValid
+              ? UBWidgetBuilder()
+                  .buildLabel(context, "PASSWORD", getThemeData().accentColor)
+              : UBWidgetBuilder().buildWarningText(context, "invalid password"),
+          UBWidgetBuilder().buildInputFieldContainer(
+              context,
+              '********',
+              _passwordTextController,
+              _onPasswordInputFieldTap,
+              _onPasswordInputFieldSubmitted,
+              _onPasswordInputFieldChanged,
+              true),
           _isTyping
               ? UBWidgetBuilder().buildDivider(
                   context,
                   24.0,
                 )
               : Column(children: <Widget>[
+                  UBWidgetBuilder().buildDivider(
+                    context,
+                    24.0,
+                  ),
                   UBWidgetBuilder().buildRoundButton(context, 'Log in',
                       getThemeData().accentColor, signInWithEmail),
                   UBWidgetBuilder().buildDivider(context, 24.0),
@@ -91,24 +107,11 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
     );
   }
 
-  Widget buildLoadingCircularProgressIndicator() {
-    return _isLoading
-        ? Container(
-            child: Center(
-              child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      getThemeData().accentColor)),
-            ),
-            color: Colors.white.withOpacity(1.0),
-          )
-        : Container();
-  }
-
   Future signInWithEmail() async {
     setState(() {
       _isLoading = true;
     });
-    await _interactor.signInWithEmail();
+    await _interactor.signInWithEmail(_userEmail, _userPassword);
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => MainScreen()),
@@ -151,25 +154,74 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
     });
   }
 
-  void _onTap() {
+  void _onEmailInputFieldTap() {
     setState(() {
       _isTyping = true;
     });
   }
 
-  void _onSubmitted(text) {
+  void _onEmailInputFieldSubmitted(text) {
     setState(() {
+      _userEmail = text;
       _isTyping = false;
     });
   }
 
-  void _onChanged(text) {
-    setState(() {});
+  void _onEmailInputFieldChanged(text) {
+    setState(() {
+      _userEmail = text;
+      _isEmailValid = _validateEmail(text);
+    });
   }
 
-  final TextEditingController _textController = new TextEditingController();
+  void _onPasswordInputFieldTap() {
+    setState(() {
+      _isTyping = true;
+    });
+  }
 
+  void _onPasswordInputFieldSubmitted(text) {
+    setState(() {
+      _userPassword = text;
+      _isTyping = false;
+    });
+  }
+
+  void _onPasswordInputFieldChanged(text) {
+    setState(() {
+      _userPassword = text;
+      _isPasswordValid = _validatePassword(text);
+    });
+  }
+
+  bool _validateEmail(String value) {
+    if (value.isEmpty) {
+      return true;
+    }
+    final RegExp nameExp = new RegExp(r'^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$');
+    if (!nameExp.hasMatch(value)) {
+      return false;
+    }
+    return true;
+  }
+
+  bool _validatePassword(String value) {
+    if (value.length > 32) {
+      return false;
+    }
+    return true;
+  }
+
+  final TextEditingController _emailTextController =
+      new TextEditingController();
+  final TextEditingController _passwordTextController =
+      new TextEditingController();
+
+  String _userEmail = "";
+  String _userPassword = "";
   bool _isLoading = false;
   bool _isTyping = false;
+  bool _isEmailValid = true;
+  bool _isPasswordValid = true;
   UserAccountInteractor _interactor;
 }

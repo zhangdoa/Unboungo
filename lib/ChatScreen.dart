@@ -39,7 +39,7 @@ class ChatScreenState extends State<ChatScreen>
         theme: getThemeData(),
         home: Scaffold(
           appBar: new AppBar(
-            title: new Text("Mimi nu știu"),
+            title: new Text(UserData.fullName),
           ),
           body: new Container(
             decoration: new BoxDecoration(
@@ -50,7 +50,7 @@ class ChatScreenState extends State<ChatScreen>
                 new Flexible(
                   child: _buildChatMessages(),
                 ),
-                new Divider(height: 1.0),
+                new Divider(height: 4.0),
                 new Container(
                   decoration:
                       new BoxDecoration(color: Theme.of(context).cardColor),
@@ -134,7 +134,7 @@ class ChatScreenState extends State<ChatScreen>
 
   void _buildChatMessageWidgets(String text) {
     ChatMessageWidget chatMessageWidget = new ChatMessageWidget(
-      userFullName: "TestDroid",
+      userFullName: UserData.fullName,
       isLocalUser: true,
       text: text,
       animationController: new AnimationController(

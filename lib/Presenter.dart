@@ -8,7 +8,7 @@ abstract class UserAccountPresenter {
 }
 
 abstract class FriendDataPresenter {
-  void onLoadFriendDataComplete(List<FirendData> items);
+  void onLoadFriendDataComplete(List<FriendData> items);
 
   void onLoadFriendDataError();
 }

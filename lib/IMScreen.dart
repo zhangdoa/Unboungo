@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
-import 'package:unboungo/LogInPage.dart';
-import 'package:unboungo/AboutPage.dart';
+import 'package:unboungo/RecentChatPage.dart';
+import 'package:unboungo/FriendPage.dart';
 
-class LogInScreen extends StatefulWidget {
+class IMScreen extends StatefulWidget {
   @override
-  State createState() => new LogInScreenState();
+  State createState() => new IMScreenState();
 }
 
-class LogInScreenState extends State<LogInScreen> {
+class IMScreenState extends State<IMScreen> {
   PageController _pageController;
   int _page = 0;
 
@@ -19,8 +19,8 @@ class LogInScreenState extends State<LogInScreen> {
         title: "Unboungo",
         home: Scaffold(
           body: new PageView(children: [
-            new LogInPage(),
-            new AboutPage(),
+            new RecentChatPage(),
+            new FriendPage(),
           ], controller: _pageController, onPageChanged: onPageChanged),
         ));
   }

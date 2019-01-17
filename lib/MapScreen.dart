@@ -37,7 +37,7 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
                   context, "Map provider", getThemeData().backgroundColor),
               actions: <Widget>[
                 UBWidgetBuilder().buildDropdownButton(context,
-                    _mapProvider.keys.toList(), onMapProviderChanged, 16.0)
+                    _mapProvider.keys.toList(), onMapProviderChanged, Colors.black, 16.0)
               ],
             ),
             key: _scaffoldKey,

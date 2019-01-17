@@ -98,6 +98,28 @@ class UBWidgetBuilder {
     );
   }
 
+  Widget buildWarningText(context, text) {
+    return new Row(
+      children: <Widget>[
+        Expanded(
+            child: new Padding(
+                padding: EdgeInsets.fromLTRB(
+                    40.0 * _getDevicePixelRatio(context),
+                    0.0,
+                    40.0 * _getDevicePixelRatio(context),
+                    0.0),
+                child: Text(
+                  text,
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 14.0,
+                  ),
+                  textAlign: TextAlign.left,
+                ))),
+      ],
+    );
+  }
+
   Widget buildCenterLogo(context, text, fontSize, icon, iconColor) {
     return new Container(
       padding: EdgeInsets.all(100.0 * _getDevicePixelRatio(context)),
@@ -125,7 +147,8 @@ class UBWidgetBuilder {
     );
   }
 
-  Container buildInputFieldContainer(context, hintText, textController, onTap, onSubmitted, onChanged, obscureText) {
+  Container buildInputFieldContainer(context, hintText, textController, onTap,
+      onSubmitted, onChanged, obscureText) {
     return new Container(
       alignment: Alignment.center,
       margin: EdgeInsets.fromLTRB(40.0 * _getDevicePixelRatio(context), 0.0,
@@ -136,11 +159,13 @@ class UBWidgetBuilder {
               color: Colors.redAccent, width: 1.0, style: BorderStyle.solid),
         ),
       ),
-      child: buildInputRow(hintText, textController, onTap, onSubmitted, onChanged, obscureText),
+      child: buildInputRow(
+          hintText, textController, onTap, onSubmitted, onChanged, obscureText),
     );
   }
 
-  Widget buildInputRow(hintText, textController, onTap, onSubmitted, onChanged, obscureText) {
+  Widget buildInputRow(
+      hintText, textController, onTap, onSubmitted, onChanged, obscureText) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -197,14 +222,14 @@ class UBWidgetBuilder {
         ));
   }
 
-  Widget buildDropdownButton(context, List<String> items, onChanged, fontSize) {
+  Widget buildDropdownButton(context, List<String> items, onChanged, textColor, fontSize) {
     return new DropdownButton<String>(
         items: items.map((String value) {
           return new DropdownMenuItem<String>(
             value: value,
             child: new Text(value,
                 style: new TextStyle(
-                  color: Colors.black,
+                  color: textColor,
                   fontSize: fontSize * _getDevicePixelRatio(context),
                   letterSpacing: 2.0 * _getDevicePixelRatio(context),
                 )),
@@ -218,5 +243,10 @@ class UBWidgetBuilder {
         data: text,
         size: size * _getDevicePixelRatio(context),
         foregroundColor: foregroundColor);
+  }
+
+  Widget buildLoadingCircularProgressIndicator(color) {
+    return CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(color));
   }
 }
