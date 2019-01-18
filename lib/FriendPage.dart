@@ -28,10 +28,6 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
 
   @override
   Widget build(BuildContext context) {
-    return _buildFriendWidgets();
-  }
-
-  Widget _buildFriendWidgets() {
     return Container(
         decoration: BoxDecoration(
           color: getThemeData().backgroundColor,
@@ -56,18 +52,27 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
                 _isTyping
                     ? buildFriendSearchBar()
                     : UBWidgetBuilder().buildDivider(context, 80.0),
-                _friendsDatas == null
-                    ? Center(
-                        child: UBWidgetBuilder().buildSplitText(
-                            context, "Add some friends now!", Colors.grey))
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: _friendsDatas.length,
-                        itemBuilder: (context, index) {
-                          FriendWidget(_friendsDatas[index].fullName);
-                        },
-                      )
+                _buildFriendWidgets()
               ]));
+  }
+
+  Widget _buildFriendWidgets() {
+    return _friendsDatas == null
+        ? Center(
+            child: UBWidgetBuilder()
+                .buildSplitText(context, "Add some friends now!", Colors.grey))
+        : ListView.builder(
+            shrinkWrap: true,
+            itemCount: _friendsDatas.length,
+            itemBuilder: (_, index) {
+              return Container(
+                  child: UBWidgetBuilder().buildFriendButton(
+                      context,
+                      _friendsDatas[index].fullName,
+                      Colors.white,
+                      _onFriendButtonPressed));
+            },
+          );
   }
 
   Widget buildFriendSearchBar() {
@@ -75,19 +80,23 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
         decoration: BoxDecoration(
           color: Colors.white,
         ),
-        padding: EdgeInsets.fromLTRB(40.0, 0.0, 40.0, 0.0),
-        constraints: BoxConstraints(maxHeight: 200.0, minHeight: 100.0),
-        child: _searchFriendResult == null
+        padding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
+        constraints:
+            BoxConstraints(maxHeight: 200.0, minHeight: 100.0, maxWidth: 300.0),
+        child: _searchFriendResult.length == 0
             ? ListView(children: <Widget>[
                 UBWidgetBuilder()
                     .buildSplitText(context, "No result found", Colors.black)
               ])
             : ListView.builder(
-                shrinkWrap: true,
+                padding: EdgeInsets.all(8.0),
                 itemCount: _searchFriendResult.length,
-                itemBuilder: (context, index) {
-                  UBWidgetBuilder().buildSplitText(
-                      context, _searchFriendResult[index], Colors.white);
+                itemBuilder: (_, index) {
+                  return UBWidgetBuilder().buildFriendButton(
+                      context,
+                      _searchFriendResult[index],
+                      Colors.black,
+                      _onFriendSearchingResultPressed);
                 }));
   }
 
@@ -108,6 +117,9 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
     setState(() {
       _isTyping = true;
     });
+    if (_newFriendName.isNotEmpty) {
+      _searchFriends(_newFriendName);
+    }
   }
 
   void _onFriendInputFieldSubmitted(text) {
@@ -117,59 +129,35 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
   }
 
   void _onFriendInputFieldChanged(text) {
-    searchFriends(text);
+    _searchFriends(text);
+  }
+
+  void _searchFriends(text) async {
+    _searchFriendResult = await _interactor.searchFriend(text);
     setState(() {
       _newFriendName = text;
     });
   }
 
-  void searchFriends(text) async {
-    _searchFriendResult = await _interactor.searchFriend(text);
+  void _onFriendSearchingResultPressed(text) async {
+    await _interactor.addFriend(text);
+    _isLoading = true;
+    await _interactor.loadFriends();
   }
 
-  void _onFriendSearchingResultPressed(text) {}
+  void _onFriendButtonPressed(text) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChatScreen(title: text)),
+    );
+  }
 
   final TextEditingController _friendTextController =
       new TextEditingController();
-  String _newFriendName;
+  String _newFriendName = '';
   bool _isTyping = false;
   FriendInteractor _interactor;
-  List<String> _searchFriendResult;
-  List<FriendData> _friendsDatas;
+  List<String> _searchFriendResult = [];
+  List<FriendData> _friendsDatas = [];
   bool _isLoading;
-}
-
-class FriendWidget extends StatelessWidget {
-  final String _friendFullName;
-
-  FriendWidget(this._friendFullName);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        margin: const EdgeInsets.symmetric(vertical: 10.0),
-        child: GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChatScreen(title: _friendFullName)),
-            );
-          },
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.only(left: 4.0, right: 4.0),
-                child: CircleAvatar(child: Text(_friendFullName[0])),
-              ),
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Text(_friendFullName,
-                    style: Theme.of(context).textTheme.subhead),
-              ),
-            ],
-          ),
-        ));
-  }
 }

@@ -52,8 +52,12 @@ class FriendInteractor {
   }
 
   Future<List<String>> searchFriend(name) async {
-  var result = await _repository.searchFriend(name);
-  return result;
+    var result = await _repository.searchFriend(name);
+    return result;
+  }
+
+  Future addFriend(name) async {
+    await _repository.addFriend(name);
   }
 }
 

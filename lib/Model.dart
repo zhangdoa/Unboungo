@@ -11,7 +11,7 @@ import 'package:device_info/device_info.dart';
 
 class UserAccountManager {
   static final UserAccountManager _singleton =
-  new UserAccountManager._internal();
+      new UserAccountManager._internal();
 
   final _googleSignIn = new GoogleSignIn();
 
@@ -54,7 +54,7 @@ class UserAccountManager {
   Future<bool> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
     final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+        await googleUser.authentication;
 
     final FirebaseUser firebaseUser = await _firebaseAuth.signInWithGoogle(
       accessToken: googleAuth.accessToken,
@@ -128,20 +128,23 @@ class UserAccountManager {
         .where('id', isEqualTo: UserData._uid)
         .getDocuments();
     final List<DocumentSnapshot> documents = result.documents;
-    documents.forEach((documentSnapshot) {
-      print(documentSnapshot.toString());
-    });
+    documents.forEach((documentSnapshot) {});
   }
 
   Future<List<FriendData>> fetchFriendData() async {
-    final QuerySnapshot result = await _firestore
+    final userFriendsCollection = await _firestore
         .collection('users')
-        .where('id', isEqualTo: UserData._uid)
-        .getDocuments();
-    final List<DocumentSnapshot> documents = result.documents;
+        .document(UserData._uid)
+        .collection('friends');
+    final QuerySnapshot userFriendsQuerySnapshot = await userFriendsCollection.getDocuments();
+    final List<DocumentSnapshot> documents = userFriendsQuerySnapshot.documents;
+    List<FriendData> result = [];
     documents.forEach((documentSnapshot) {
-      print(documentSnapshot.toString());
+      final val = FriendData();
+      val.fullName = documentSnapshot['nickname'].toString();
+      result.add(val);
     });
+    return result;
   }
 
   Future<List<String>> searchFriend(name) async {
@@ -153,8 +156,45 @@ class UserAccountManager {
     List<String> suitableFriends = [];
     if (documents.length != 0) {
       documents.forEach((snapshot) {
-        suitableFriends.add(snapshot.data.toString());
+        suitableFriends.add(snapshot["nickname"]);
       });
+    }
+    return suitableFriends;
+  }
+
+  Future addFriend(name) async {
+    // get friend id
+    final QuerySnapshot friendQuerySnapshot = await _firestore
+        .collection('users')
+        .where('nickname', isEqualTo: name)
+        .getDocuments();
+    final List<DocumentSnapshot> friendDocumentSnapshot =
+        friendQuerySnapshot.documents;
+
+    var friendId;
+    if (friendDocumentSnapshot.length != 0) {
+      friendDocumentSnapshot.forEach((snapshot) {
+        friendId = snapshot['id'];
+      });
+
+      await addFriendToFirestore(UserData._uid, friendId, name);
+      await addFriendToFirestore(friendId, UserData._uid, UserData.fullName);
+    }
+  }
+
+  Future addFriendToFirestore(userId, friendId, friendName) async {
+    final userFriendsCollection = await _firestore
+        .collection('users')
+        .document(userId)
+        .collection('friends');
+    final queryResult = await userFriendsCollection
+        .where('id', isEqualTo: friendId)
+        .getDocuments();
+    if (queryResult.documents.length == 0) {
+      await userFriendsCollection.add({'id': friendId, 'nickname': friendName});
+      print("User: " + userId + " :New friend added");
+    } else {
+      print("User: " + userId + " :Friend already added");
     }
   }
 }
@@ -173,18 +213,17 @@ class UserData {
 }
 
 class FriendData {
-  final String fullName;
+  String fullName;
 
-  const FriendData({this.fullName});
-
-  FriendData.fromMap(Map<String, dynamic> map)
-      : fullName = "${map['name']['first']} ${map['name']['last']}";
+  FriendData({this.fullName});
 }
 
 abstract class FriendRepository {
   Future<List<FriendData>> fetch();
 
   Future<List<String>> searchFriend(name);
+
+  Future addFriend(name);
 }
 
 class FetchDataException implements Exception {
@@ -206,6 +245,10 @@ class FirebaseFriendRepository implements FriendRepository {
   Future<List<FriendData>> fetch() async {
     var result = await UserAccountManager().fetchFriendData();
     return result;
+  }
+
+  Future addFriend(name) async {
+    await UserAccountManager().addFriend(name);
   }
 }
 

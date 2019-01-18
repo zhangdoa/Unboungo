@@ -222,7 +222,8 @@ class UBWidgetBuilder {
         ));
   }
 
-  Widget buildDropdownButton(context, List<String> items, onChanged, textColor, fontSize) {
+  Widget buildDropdownButton(
+      context, List<String> items, onChanged, textColor, fontSize) {
     return new DropdownButton<String>(
         items: items.map((String value) {
           return new DropdownMenuItem<String>(
@@ -248,5 +249,29 @@ class UBWidgetBuilder {
   Widget buildLoadingCircularProgressIndicator(color) {
     return CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(color));
+  }
+
+  Widget buildUserAvatar(context, userName) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(4.0 / _getDevicePixelRatio(context),
+          4.0 / _getDevicePixelRatio(context), 0.0, 0.0),
+      child: CircleAvatar(child: Text(userName)),
+    );
+  }
+
+  Widget buildFriendButton(context, name, nameColor, onPressedCallback) {
+    return new FlatButton(
+        onPressed: () {
+          onPressedCallback(name);
+        },
+        child: Row(children: <Widget>[
+          buildUserAvatar(context, name[0]),
+          buildSplitText(context, name, nameColor)
+        ]),
+        padding: EdgeInsets.fromLTRB(
+            5.0 * _getDevicePixelRatio(context),
+            5.0 * _getDevicePixelRatio(context),
+            5.0 * _getDevicePixelRatio(context),
+            5.0 * _getDevicePixelRatio(context)));
   }
 }

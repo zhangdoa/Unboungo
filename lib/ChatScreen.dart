@@ -39,7 +39,7 @@ class ChatScreenState extends State<ChatScreen>
         theme: getThemeData(),
         home: Scaffold(
           appBar: new AppBar(
-            title: new Text(UserData.fullName),
+            title: new Text('Mimi'),
           ),
           body: new Container(
             decoration: new BoxDecoration(
@@ -156,6 +156,7 @@ class ChatScreenState extends State<ChatScreen>
   final List<ChatMessageWidget> _chatMessageWidgets = <ChatMessageWidget>[];
   final TextEditingController _textController = new TextEditingController();
   bool _isComposing = false;
+  String _title;
 }
 
 class ChatMessageWidget extends StatelessWidget {
@@ -183,10 +184,10 @@ class ChatMessageWidget extends StatelessWidget {
             children: isLocalUser
                 ? <Widget>[
                     buildSingleChatMessage(),
-                    buildUserAvatar(),
+                    UBWidgetBuilder().buildUserAvatar(context, userFullName[0]),
                   ]
                 : <Widget>[
-                    buildUserAvatar(),
+                    UBWidgetBuilder().buildUserAvatar(context, userFullName[0]),
                     buildSingleChatMessage(),
                   ],
           ),
@@ -218,12 +219,5 @@ class ChatMessageWidget extends StatelessWidget {
         )
       ],
     ));
-  }
-
-  Widget buildUserAvatar() {
-    return new Container(
-      margin: const EdgeInsets.fromLTRB(4.0, 4.0, 0.0, 0.0),
-      child: new CircleAvatar(child: new Text(userFullName[0])),
-    );
   }
 }

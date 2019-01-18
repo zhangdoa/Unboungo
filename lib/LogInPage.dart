@@ -39,7 +39,8 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
           UBWidgetBuilder().buildCenterLogo(context, 'UNBOUNGO', 24.0,
               Icons.device_hub, getThemeData().accentColor),
           _isLoading
-              ? UBWidgetBuilder().buildLoadingCircularProgressIndicator(getThemeData().accentColor)
+              ? UBWidgetBuilder().buildLoadingCircularProgressIndicator(
+                  getThemeData().accentColor)
               : UBWidgetBuilder().buildDivider(context, 32.0),
           _isEmailValid
               ? UBWidgetBuilder()
@@ -108,14 +109,16 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
   }
 
   Future signInWithEmail() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await _interactor.signInWithEmail(_userEmail, _userPassword);
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MainScreen()),
-    );
+    if (_userEmail.isNotEmpty && _userPassword.isNotEmpty) {
+      setState(() {
+        _isLoading = true;
+      });
+      await _interactor.signInWithEmail(_userEmail, _userPassword);
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
+    }
   }
 
   Future signInWithGoogle() async {
