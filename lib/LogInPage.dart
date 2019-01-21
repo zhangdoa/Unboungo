@@ -87,19 +87,19 @@ class LogInPageState extends State<LogInPage> implements UserAccountPresenter {
                   Row(
                     children: <Widget>[
                       UBWidgetBuilder()
-                          .buildRowButtonPadder(context, 8.0, 0.25),
+                          .buildRowElementPadder(context, 8.0, 0.25),
                       Expanded(
                         child: UBWidgetBuilder().buildRoundButton(context,
                             'Google', Color(0xffdd4b39), signInWithGoogle),
                       ),
                       UBWidgetBuilder()
-                          .buildRowButtonPadder(context, 8.0, 0.25),
+                          .buildRowElementPadder(context, 8.0, 0.25),
                       Expanded(
                         child: UBWidgetBuilder().buildRoundButton(context,
                             'Facebook', Color(0Xff3B5998), signInWithFacebook),
                       ),
                       UBWidgetBuilder()
-                          .buildRowButtonPadder(context, 8.0, 0.25),
+                          .buildRowElementPadder(context, 8.0, 0.25),
                     ],
                   )
                 ]),

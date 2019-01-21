@@ -45,7 +45,7 @@ class UBWidgetBuilder {
             15.0 * _getDevicePixelRatio(context)));
   }
 
-  Container buildRowButtonPadder(context, margin, width) {
+  Container buildRowElementPadder(context, margin, width) {
     return Container(
       margin: EdgeInsets.all(margin * _getDevicePixelRatio(context)),
       decoration: BoxDecoration(
@@ -260,18 +260,23 @@ class UBWidgetBuilder {
   }
 
   Widget buildFriendButton(context, name, nameColor, onPressedCallback) {
-    return new FlatButton(
-        onPressed: () {
-          onPressedCallback(name);
-        },
-        child: Row(children: <Widget>[
-          buildUserAvatar(context, name[0]),
-          buildSplitText(context, name, nameColor)
-        ]),
-        padding: EdgeInsets.fromLTRB(
-            5.0 * _getDevicePixelRatio(context),
-            5.0 * _getDevicePixelRatio(context),
-            5.0 * _getDevicePixelRatio(context),
-            5.0 * _getDevicePixelRatio(context)));
+    return new Container(
+        alignment: Alignment.center,
+        margin: EdgeInsets.fromLTRB(40.0 * _getDevicePixelRatio(context), 0.0,
+            40.0 * _getDevicePixelRatio(context), 0.0),
+        child: FlatButton(
+            onPressed: () {
+              onPressedCallback(name);
+            },
+            child: Row(children: <Widget>[
+              buildUserAvatar(context, name[0]),
+              buildRowElementPadder(context, 4.0, 0.25),
+              buildSplitText(context, name, nameColor)
+            ]),
+            padding: EdgeInsets.fromLTRB(
+                5.0 * _getDevicePixelRatio(context),
+                5.0 * _getDevicePixelRatio(context),
+                5.0 * _getDevicePixelRatio(context),
+                5.0 * _getDevicePixelRatio(context))));
   }
 }

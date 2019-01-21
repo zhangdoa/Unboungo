@@ -51,7 +51,19 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
                     false),
                 _isTyping
                     ? buildFriendSearchBar()
-                    : UBWidgetBuilder().buildDivider(context, 80.0),
+                    : UBWidgetBuilder().buildDivider(context, 40.0),
+                _showAddFriendDialog
+                    ? AlertDialog(
+                        title: new Text("Add friend"),
+                        content: new Text(
+                            "Send a friend request to " + _newFriendName + "?"),
+                        actions: <Widget>[
+                            FlatButton(
+                              child: new Text("Da"),
+                              onPressed: _sendFriendRequest,
+                            )
+                          ])
+                    : UBWidgetBuilder().buildDivider(context, 40.0),
                 _buildFriendWidgets()
               ]));
   }
@@ -140,9 +152,21 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
   }
 
   void _onFriendSearchingResultPressed(text) async {
-    await _interactor.addFriend(text);
-    _isLoading = true;
-    await _interactor.loadFriends();
+    setState(() {
+      _isTyping = false;
+      _showAddFriendDialog = true;
+    });
+  }
+
+  void _sendFriendRequest() async {
+    setState(() {
+      _showAddFriendDialog = false;
+    });
+    await _interactor.addFriend(_newFriendName);
+    setState(() {
+      _isLoading = true;
+    });
+    _interactor.loadFriends();
   }
 
   void _onFriendButtonPressed(text) async {
@@ -160,4 +184,5 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
   List<String> _searchFriendResult = [];
   List<FriendData> _friendsDatas = [];
   bool _isLoading;
+  bool _showAddFriendDialog = false;
 }
