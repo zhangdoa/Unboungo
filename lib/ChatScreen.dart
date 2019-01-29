@@ -17,14 +17,15 @@ class ChatScreen extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State createState() => new ChatScreenState();
+  State createState() => new ChatScreenState(title);
 }
 
 class ChatScreenState extends State<ChatScreen>
     with TickerProviderStateMixin
     implements ChatMessagePresenter {
-  ChatScreenState() {
+  ChatScreenState(title) {
     _interactor = new ChatMessageInteractor(this);
+    _title = title;
   }
 
   @override
@@ -39,7 +40,7 @@ class ChatScreenState extends State<ChatScreen>
         theme: getThemeData(),
         home: Scaffold(
           appBar: new AppBar(
-            title: new Text('Mimi'),
+            title: new Text(_title),
           ),
           body: new Container(
             decoration: new BoxDecoration(
@@ -126,7 +127,7 @@ class ChatScreenState extends State<ChatScreen>
   void _handleSubmitted(String text) {
     _textController.clear();
     _buildChatMessageWidgets(text);
-    _sendMessage(text: text);
+    _sendMessage(_title, text);
     setState(() {
       _isComposing = false;
     });
@@ -148,8 +149,8 @@ class ChatScreenState extends State<ChatScreen>
     chatMessageWidget.animationController.forward();
   }
 
-  void _sendMessage({String text, String imageUrl}) {
-    _interactor.send(text: text);
+  void _sendMessage(name, message) {
+    _interactor.send(name, message);
   }
 
   ChatMessageInteractor _interactor;

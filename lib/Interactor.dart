@@ -102,8 +102,8 @@ class ChatMessageInteractor {
     });
   }
 
-  Future<bool> send({String text}) async {
-    _repository.send(text: text);
+  Future<bool> send(name, message) async {
+    _repository.send(name, message);
     return true;
   }
 }

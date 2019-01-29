@@ -55,7 +55,7 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
           24.0,
         ),
         UBWidgetBuilder()
-            .buildSplitText(context, _QRCodeToText, getThemeData().accentColor),
+            .buildSplitText(context, _qrCodeToText, getThemeData().accentColor),
         UBWidgetBuilder().buildRoundButton(
             context, 'Scan QR Code', getThemeData().accentColor, _scanQRCode),
         UBWidgetBuilder().buildDivider(
@@ -166,7 +166,7 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
 
   Future _scanQRCode() async {
     String barcode = await BarcodeScanner.scan();
-    setState(() => this._QRCodeToText = barcode);
+    setState(() => this._qrCodeToText = barcode);
   }
 
   void _onTap() {
@@ -194,5 +194,5 @@ class CameraScreenState extends State<CameraScreen> implements PagePresenter {
   bool _isTyping = false;
   String _hintText = "please enter the original text to encode";
   String _textToQRCode = "Unboungo";
-  String _QRCodeToText = "";
+  String _qrCodeToText = "";
 }
