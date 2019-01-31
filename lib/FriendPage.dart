@@ -58,6 +58,14 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
                             "Send a friend request to " + _newFriendName + "?"),
                         actions: <Widget>[
                             FlatButton(
+                                child: new Text("Nu"),
+                                onPressed: () {
+                                  setState(() {
+                                    _isTyping = false;
+                                    _showAddFriendDialog = false;
+                                  });
+                                }),
+                            FlatButton(
                               child: new Text("Da"),
                               onPressed: _sendFriendRequest,
                             )
@@ -68,7 +76,7 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
   }
 
   Widget _buildFriendWidgets() {
-    return _friendsDatas == null
+    return _friendsDatas.length == 0
         ? Center(
             child: UBWidgetBuilder()
                 .buildSplitText(context, "Add some friends now!", Colors.grey))

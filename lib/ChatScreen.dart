@@ -31,7 +31,7 @@ class ChatScreenState extends State<ChatScreen>
   @override
   void initState() {
     super.initState();
-    _interactor.loadMessages();
+    _interactor.loadMessages(_title);
   }
 
   @override
@@ -72,7 +72,10 @@ class ChatScreenState extends State<ChatScreen>
 
   @override
   void onLoadChatMessageComplete(List<ChatMessage> items) {
-    _buildChatMessageWidgets(items[0].messages);
+    items.forEach((item) {
+      _buildChatMessageWidgets(
+          item.fullName, item.messages, item.fullName == UserData.fullName);
+    });
   }
 
   @override
@@ -126,17 +129,17 @@ class ChatScreenState extends State<ChatScreen>
 
   void _handleSubmitted(String text) {
     _textController.clear();
-    _buildChatMessageWidgets(text);
+    _buildChatMessageWidgets(UserData.fullName, text, true);
     _sendMessage(_title, text);
     setState(() {
       _isComposing = false;
     });
   }
 
-  void _buildChatMessageWidgets(String text) {
+  void _buildChatMessageWidgets(String userName, String text, isLocalUser) {
     ChatMessageWidget chatMessageWidget = new ChatMessageWidget(
-      userFullName: UserData.fullName,
-      isLocalUser: true,
+      userFullName: userName,
+      isLocalUser: isLocalUser,
       text: text,
       animationController: new AnimationController(
         duration: new Duration(milliseconds: 200),

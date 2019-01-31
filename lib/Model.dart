@@ -84,8 +84,16 @@ class UserAccountManager {
             .collection('users')
             .document(firebaseUser.uid)
             .collection('friends')
-            .add({
-          'id': firebaseUser.uid,
+            .document('initializer')
+            .setData({
+          'timestamp': DateTime.now().millisecondsSinceEpoch.toString()
+        });
+        _firestore
+            .collection('users')
+            .document(firebaseUser.uid)
+            .collection('chatMessages')
+            .document('initializer')
+            .setData({
           'timestamp': DateTime.now().millisecondsSinceEpoch.toString()
         });
       }
@@ -131,16 +139,59 @@ class UserAccountManager {
   }
 
   Future<List<RecentChatData>> fetchRecentChatData() async {
-    final QuerySnapshot result = await _firestore
+    final chatMessageCollection = _firestore
         .collection('users')
-        .where('id', isEqualTo: UserData._uid)
+        .document(UserData._uid)
+        .collection('chatMessages');
+    final chatMessageQuerySnapshot = await chatMessageCollection.getDocuments();
+    final List<DocumentSnapshot> documents = chatMessageQuerySnapshot.documents;
+    List<RecentChatData> result = [];
+    await Future.forEach(documents, (documentSnapshot) async {
+      if (documentSnapshot.documentID != 'initializer') {
+        final val = RecentChatData();
+        String chatMessageId = documentSnapshot.documentID;
+        final chatMessageContentCollection = _firestore
+            .collection('chatMessages')
+            .document(chatMessageId)
+            .collection('content');
+        final lastMessage = await chatMessageContentCollection
+            .orderBy("timestamp", descending: true)
+            .limit(1)
+            .getDocuments();
+        val.userName = await getUserName(lastMessage.documents[0]['receiver']);
+        val.lastMessage = await lastMessage.documents[0]['message'];
+        result.add(val);
+      }
+    });
+    return result;
+  }
+
+  Future<List<ChatMessage>> fetchChatMessageData(friendName) async {
+    final friendId = await getUserId(friendName);
+    final chatMessageId = getChatCollectionId(UserData._uid, friendId);
+
+    final chatMessageCollection = _firestore.collection('chatMessages');
+
+    final chatMessageQuerySnapshot = await chatMessageCollection
+        .document(chatMessageId)
+        .collection('content')
         .getDocuments();
-    final List<DocumentSnapshot> documents = result.documents;
-    documents.forEach((documentSnapshot) {});
+
+    final chatMessageDocuments = chatMessageQuerySnapshot.documents;
+
+    List<ChatMessage> result = [];
+    await Future.forEach(chatMessageDocuments, (documentSnapshot) async {
+      final val = ChatMessage();
+      final senderName = await getUserName(documentSnapshot['sender']);
+      val.fullName = senderName;
+      val.messages = await documentSnapshot['message'];
+      result.add(val);
+    });
+    return result;
   }
 
   Future<List<FriendData>> fetchFriendData() async {
-    final userFriendsCollection = await _firestore
+    final userFriendsCollection = _firestore
         .collection('users')
         .document(UserData._uid)
         .collection('friends');
@@ -149,10 +200,12 @@ class UserAccountManager {
     final List<DocumentSnapshot> documents = userFriendsQuerySnapshot.documents;
     List<FriendData> result = [];
     await Future.forEach(documents, (documentSnapshot) async {
-      final val = FriendData();
-      String friendId = documentSnapshot['id'].toString();
-      val.fullName = await getUserName(friendId);
-      result.add(val);
+      if (documentSnapshot.documentID != 'initializer') {
+        final val = FriendData();
+        String friendId = documentSnapshot.documentID;
+        val.fullName = await getUserName(friendId);
+        result.add(val);
+      }
     });
     return result;
   }
@@ -166,7 +219,9 @@ class UserAccountManager {
     List<String> suitableFriends = [];
     if (documents.length != 0) {
       documents.forEach((snapshot) {
-        suitableFriends.add(snapshot["nickname"]);
+        if (snapshot['nickname'] != UserData.fullName) {
+          suitableFriends.add(snapshot['nickname']);
+        }
       });
     }
     return suitableFriends;
@@ -215,21 +270,28 @@ class UserAccountManager {
     var friendId = await getUserId(name);
     await addFriendToFirestore(UserData._uid, friendId, name);
     await addFriendToFirestore(friendId, UserData._uid, UserData.fullName);
+    final chatMessage = _firestore
+        .collection('chatMessages')
+        .document(getChatCollectionId(UserData._uid, friendId));
+    await chatMessage.setData(
+        {'timestamp': DateTime.now().millisecondsSinceEpoch.toString()});
   }
 
   Future addFriendToFirestore(userId, friendId, friendName) async {
-    final userFriendsCollection = await _firestore
-        .collection('users')
-        .document(userId)
-        .collection('friends');
-    final queryResult = await userFriendsCollection
-        .where('id', isEqualTo: friendId)
-        .getDocuments();
-    if (queryResult.documents.length == 0) {
-      await userFriendsCollection.add({'id': friendId, 'nickname': friendName});
-      await _firestore
+    final userFriendsCollection =
+        _firestore.collection('users').document(userId).collection('friends');
+    final queryResult = await userFriendsCollection.document(friendId).get();
+    if (!queryResult.exists) {
+      await userFriendsCollection
+          .document(friendId)
+          .setData({'nickname': friendName});
+      final chatMessage = _firestore
+          .collection('users')
+          .document(userId)
           .collection('chatMessages')
-          .add({'id': getChatCollectionId(userId, friendId)});
+          .document(getChatCollectionId(userId, friendId));
+      await chatMessage.setData(
+          {'timestamp': DateTime.now().millisecondsSinceEpoch.toString()});
       print("User: " + userId + " :New friend added");
     } else {
       print("User: " + userId + " :Friend already added");
@@ -241,11 +303,11 @@ class UserAccountManager {
     var friendId = await getUserId(name);
     var chatMessageId = getChatCollectionId(userId, friendId);
 
-    final chatMessageCollection = await _firestore
-        .collection('chatMessages')
-        .document(chatMessageId)
-        .collection('content');
-    chatMessageCollection.add({
+    final chatMessageCollection =
+        _firestore.collection('chatMessages').document(chatMessageId);
+    chatMessageCollection.collection('content').add({
+      'sender': userId,
+      'receiver': friendId,
       'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
       'message': message
     });
@@ -253,7 +315,6 @@ class UserAccountManager {
 
   getChatCollectionId(String userId, String friendId) {
     var chatMessageId;
-
     if (userId.hashCode <= friendId.hashCode) {
       chatMessageId = '$userId-$friendId';
     } else {
@@ -317,14 +378,10 @@ class FirebaseFriendRepository implements FriendRepository {
 }
 
 class RecentChatData {
-  final String lastMessage;
-  final String userName;
+  String lastMessage;
+  String userName;
 
-  const RecentChatData({this.lastMessage, this.userName});
-
-  RecentChatData.fromMap(Map<String, dynamic> map)
-      : lastMessage = map['lastMessage'],
-        userName = "${map['name']['first']} ${map['name']['last']}";
+  RecentChatData({this.lastMessage, this.userName});
 }
 
 abstract class RecentChatRepository {
@@ -339,24 +396,23 @@ class FirebaseRecentChatRepository implements RecentChatRepository {
 }
 
 class ChatMessage {
-  final String fullName;
-  final String messages;
+  String fullName;
+  String messages;
 
-  const ChatMessage({this.fullName, this.messages});
-
-  ChatMessage.fromMap(Map<String, dynamic> map)
-      : fullName = "${map['senderName']['first']} ${map['senderName']['last']}",
-        messages = map['text'];
+  ChatMessage({this.fullName, this.messages});
 }
 
 abstract class ChatMessageRepository {
-  Future<List<ChatMessage>> fetch();
+  Future<List<ChatMessage>> fetch(friendName);
 
   Future<bool> send(name, message);
 }
 
 class FirebaseChatMessageRepository implements ChatMessageRepository {
-  Future<List<ChatMessage>> fetch() async {}
+  Future<List<ChatMessage>> fetch(friendName) async {
+    var result = await UserAccountManager().fetchChatMessageData(friendName);
+    return result;
+  }
 
   Future<bool> send(name, message) async {
     await UserAccountManager().sendChatMessage(name, message);

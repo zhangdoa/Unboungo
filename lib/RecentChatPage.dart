@@ -39,16 +39,26 @@ class RecentChatPageState extends State<RecentChatPage>
                     child: UBWidgetBuilder()
                         .buildLoadingCircularProgressIndicator(
                             getThemeData().accentColor)))
-            : _recentChatDatas == null
+            : _recentChatDatas.length == 0
                 ? Center(
                     child: UBWidgetBuilder().buildSplitText(
                         context, "Find a friend and let's chat!", Colors.grey))
                 : ListView.builder(
                     shrinkWrap: true,
                     itemCount: _recentChatDatas.length,
-                    itemBuilder: (context, index) {
-                      RecentChatWidget(_recentChatDatas[index].lastMessage,
-                          _recentChatDatas[index].userName);
+                    itemBuilder: (_, index) {
+                      return UBWidgetBuilder().buildRecentChatButton(
+                          context,
+                          _recentChatDatas[index].userName,
+                          Colors.white,
+                          _recentChatDatas[index].lastMessage, (name) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                  title: name)),
+                        );
+                      });
                     },
                   ));
   }
@@ -69,47 +79,4 @@ class RecentChatPageState extends State<RecentChatPage>
   RecentChatInteractor _interactor;
   List<RecentChatData> _recentChatDatas;
   bool _isLoading;
-}
-
-class RecentChatWidget extends StatelessWidget {
-  final String _lastMessage;
-  final String _userName;
-
-  RecentChatWidget(this._lastMessage, this._userName);
-
-  @override
-  Widget build(BuildContext context) {
-    return new Container(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: new Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          new Container(
-            margin: const EdgeInsets.only(left: 4.0, right: 4.0),
-            child: new CircleAvatar(child: new Text(_userName[0])),
-          ),
-          new Expanded(
-              child: new GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ChatScreen(title: _userName)),
-              );
-            },
-            child: new Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                new Text(_userName, style: Theme.of(context).textTheme.subhead),
-                new Container(
-                  margin: const EdgeInsets.only(top: 5.0),
-                  child: new Text(_lastMessage),
-                ),
-              ],
-            ),
-          )),
-        ],
-      ),
-    );
-  }
 }

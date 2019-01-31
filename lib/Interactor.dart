@@ -90,11 +90,11 @@ class ChatMessageInteractor {
     _repository = new FirebaseChatMessageRepository();
   }
 
-  void loadMessages() {
+  void loadMessages(friendName) {
     assert(_presenter != null);
 
     _repository
-        .fetch()
+        .fetch(friendName)
         .then((messages) => _presenter.onLoadChatMessageComplete(messages))
         .catchError((onError) {
       print(onError);
