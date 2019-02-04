@@ -51,14 +51,8 @@ class RecentChatPageState extends State<RecentChatPage>
                           context,
                           _recentChatDatas[index].userName,
                           Colors.white,
-                          _recentChatDatas[index].lastMessage, (name) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ChatScreen(
-                                  title: name)),
-                        );
-                      });
+                          _recentChatDatas[index].lastMessage,
+                          _onRecentButtonPressed);
                     },
                   ));
   }
@@ -74,6 +68,13 @@ class RecentChatPageState extends State<RecentChatPage>
   @override
   void onLoadRecentChatDataError() {
     // TODO: implement onLoadFriendsError
+  }
+
+  void _onRecentButtonPressed(text) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ChatScreen(title: text)),
+    );
   }
 
   RecentChatInteractor _interactor;

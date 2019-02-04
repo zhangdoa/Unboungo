@@ -158,7 +158,9 @@ class UserAccountManager {
             .orderBy("timestamp", descending: true)
             .limit(1)
             .getDocuments();
-        val.userName = await getUserName(lastMessage.documents[0]['receiver']);
+        var senderName = await getUserName(lastMessage.documents[0]['sender']);
+        var receiverName = await getUserName(lastMessage.documents[0]['receiver']);
+        val.userName = senderName == UserData.fullName ? receiverName : senderName;
         val.lastMessage = await lastMessage.documents[0]['message'];
         result.add(val);
       }

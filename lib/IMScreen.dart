@@ -7,7 +7,7 @@ import 'package:unboungo/FriendPage.dart';
 
 class IMScreen extends StatefulWidget {
   @override
-  State createState() => new IMScreenState();
+  State createState() => IMScreenState();
 }
 
 class IMScreenState extends State<IMScreen> {
@@ -16,21 +16,27 @@ class IMScreenState extends State<IMScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
         title: "Unboungo",
         home: Scaffold(
-            body: new PageView(children: [
-              new RecentChatPage(),
-              new FriendPage(),
+            body: PageView(children: [
+              RecentChatPage(),
+              FriendPage(),
             ], controller: _pageController, onPageChanged: onPageChanged),
-            bottomNavigationBar: new BottomNavigationBar(
-
+            bottomNavigationBar: BottomNavigationBar(
+                fixedColor: Colors.black45,
                 items: [
-              new BottomNavigationBarItem(
-                  icon: new Icon(Icons.chat_bubble, color: getThemeData().backgroundColor), title: new Text("Recent")),
-              new BottomNavigationBarItem(
-                  icon: new Icon(Icons.contacts, color: getThemeData().backgroundColor), title: new Text("Friends")),
-            ], onTap: navigationTapped, currentIndex: _page)));
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.chat_bubble,
+                          color: getThemeData().backgroundColor),
+                      title: Text("Recent")),
+                  BottomNavigationBarItem(
+                      icon: Icon(Icons.contacts,
+                          color: getThemeData().backgroundColor),
+                      title: Text("Friends")),
+                ],
+                onTap: navigationTapped,
+                currentIndex: _page)));
   }
 
   void navigationTapped(int page) {
@@ -47,7 +53,7 @@ class IMScreenState extends State<IMScreen> {
   @override
   void initState() {
     super.initState();
-    _pageController = new PageController();
+    _pageController = PageController();
   }
 
   @override

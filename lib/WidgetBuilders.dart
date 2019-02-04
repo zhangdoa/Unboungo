@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:unboungo/Theme.dart';
 
 class UBWidgetBuilder {
   static final UBWidgetBuilder _singleton = new UBWidgetBuilder._internal();
@@ -72,6 +73,18 @@ class UBWidgetBuilder {
                   ),
                 ))),
       ],
+    );
+  }
+
+  Widget buildNormalText(context, text, textColor) {
+    return new Text(
+      text,
+      overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.start,
+      style: TextStyle(
+        color: textColor,
+        fontSize: 15.0,
+      ),
     );
   }
 
@@ -176,6 +189,8 @@ class UBWidgetBuilder {
             onTap: onTap,
             onSubmitted: onSubmitted,
             onChanged: onChanged,
+            maxLines: null,
+            keyboardType: TextInputType.multiline,
             style: TextStyle(color: Colors.white),
             obscureText: obscureText,
             textAlign: TextAlign.left,
@@ -255,12 +270,20 @@ class UBWidgetBuilder {
     return Container(
       margin: EdgeInsets.fromLTRB(4.0 / _getDevicePixelRatio(context),
           4.0 / _getDevicePixelRatio(context), 0.0, 0.0),
-      child: CircleAvatar(child: Text(userName)),
+      child: CircleAvatar(
+          child: Text(userName),
+          backgroundColor: getThemeData().buttonColor,
+          foregroundColor: getThemeData().accentColor),
     );
   }
 
   Widget buildFriendButton(context, name, nameColor, onPressedCallback) {
     return new Container(
+        decoration: ShapeDecoration(
+            color: getThemeData().canvasColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(20.0),
+            )),
         alignment: Alignment.center,
         margin: EdgeInsets.fromLTRB(40.0 * _getDevicePixelRatio(context), 0.0,
             40.0 * _getDevicePixelRatio(context), 0.0),
@@ -271,7 +294,7 @@ class UBWidgetBuilder {
             child: Row(children: <Widget>[
               buildUserAvatar(context, name[0]),
               buildRowElementPadder(context, 4.0, 0.25),
-              buildSplitText(context, name, nameColor)
+              buildNormalText(context, name, nameColor)
             ]),
             padding: EdgeInsets.fromLTRB(
                 5.0 * _getDevicePixelRatio(context),
@@ -283,9 +306,17 @@ class UBWidgetBuilder {
   Widget buildRecentChatButton(
       context, name, nameColor, message, onPressedCallback) {
     return new Container(
+        decoration: ShapeDecoration(
+            color: getThemeData().canvasColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(20.0),
+            )),
         alignment: Alignment.center,
-        margin: EdgeInsets.fromLTRB(40.0 * _getDevicePixelRatio(context), 0.0,
-            40.0 * _getDevicePixelRatio(context), 0.0),
+        margin: EdgeInsets.fromLTRB(
+            40.0 * _getDevicePixelRatio(context),
+            10.0 * _getDevicePixelRatio(context),
+            40.0 * _getDevicePixelRatio(context),
+            10.0 * _getDevicePixelRatio(context)),
         child: FlatButton(
             onPressed: () {
               onPressedCallback(name);
@@ -293,10 +324,13 @@ class UBWidgetBuilder {
             child: Row(children: <Widget>[
               buildUserAvatar(context, name[0]),
               buildRowElementPadder(context, 4.0, 0.25),
-              Column(children: <Widget>[
-                buildSplitText(context, name, nameColor),
-                buildSplitText(context, message, Colors.white)
-              ]),
+              Flexible(
+                  child: Column(children: <Widget>[
+                Row(children: <Widget>[
+                  buildNormalText(context, name, nameColor)
+                ]),
+                buildNormalText(context, message, Colors.white)
+              ])),
             ]),
             padding: EdgeInsets.fromLTRB(
                 5.0 * _getDevicePixelRatio(context),

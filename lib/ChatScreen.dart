@@ -36,31 +36,37 @@ class ChatScreenState extends State<ChatScreen>
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        theme: getThemeData(),
-        home: Scaffold(
-          appBar: new AppBar(
-            title: new Text(_title),
-          ),
-          body: new Container(
-            decoration: new BoxDecoration(
-              color: getThemeData().backgroundColor,
+    return WillPopScope(
+      child:  Scaffold(
+            appBar: new AppBar(
+              title: new Text(_title),
+              backgroundColor: getThemeData().accentColor,
+              leading: new IconButton(
+                icon: new Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
             ),
-            child: new Column(
-              children: <Widget>[
-                new Flexible(
-                  child: _buildChatMessages(),
-                ),
-                new Divider(height: 4.0),
-                new Container(
-                  decoration:
-                      new BoxDecoration(color: Theme.of(context).cardColor),
-                  child: _buildTextComposer(),
-                ),
-              ],
+            body: new Container(
+              decoration: new BoxDecoration(
+                color: getThemeData().backgroundColor,
+              ),
+              child: new Column(
+                children: <Widget>[
+                  new Flexible(
+                    child: _buildChatMessages(),
+                  ),
+                  new Divider(height: 4.0),
+                  new Container(
+                    decoration:
+                        new BoxDecoration(color: Theme.of(context).cardColor),
+                    child: _buildTextComposer(),
+                  ),
+                ],
+              ),
             ),
           ),
-        ));
+      onWillPop: () async => false,
+    );
   }
 
   @override

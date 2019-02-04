@@ -52,27 +52,30 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
                     ? buildFriendSearchBar()
                     : UBWidgetBuilder().buildDivider(context, 40.0),
                 _showAddFriendDialog
-                    ? AlertDialog(
-                        title: new Text("Add friend"),
-                        content: new Text(
-                            "Send a friend request to " + _newFriendName + "?"),
-                        actions: <Widget>[
-                            FlatButton(
-                                child: new Text("Nu"),
-                                onPressed: () {
-                                  setState(() {
-                                    _isTyping = false;
-                                    _showAddFriendDialog = false;
-                                  });
-                                }),
-                            FlatButton(
-                              child: new Text("Da"),
-                              onPressed: _sendFriendRequest,
-                            )
-                          ])
+                    ? buildAlertDialog()
                     : UBWidgetBuilder().buildDivider(context, 40.0),
                 _buildFriendWidgets()
               ]));
+  }
+
+  AlertDialog buildAlertDialog() {
+    return AlertDialog(
+        title: new Text("Add friend"),
+        content: new Text("Send a friend request to " + _newFriendName + "?"),
+        actions: <Widget>[
+          FlatButton(
+              child: new Text("Nu"),
+              onPressed: () {
+                setState(() {
+                  _isTyping = false;
+                  _showAddFriendDialog = false;
+                });
+              }),
+          FlatButton(
+            child: new Text("Da"),
+            onPressed: _sendFriendRequest,
+          )
+        ]);
   }
 
   Widget _buildFriendWidgets() {
