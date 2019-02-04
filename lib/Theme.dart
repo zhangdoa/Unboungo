@@ -5,6 +5,6 @@ ThemeData getThemeData() {
       primarySwatch: Colors.red,
       accentColor: Colors.redAccent,
       backgroundColor: Colors.black,
-      canvasColor: Colors.white30,
+      canvasColor: Colors.white54,
       buttonColor: Colors.black45);
 }

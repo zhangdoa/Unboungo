@@ -32,15 +32,16 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
         title: "MapScreen",
         theme: getThemeData(),
         home: Scaffold(
-            appBar: AppBar(
-              title: UBWidgetBuilder().buildAppBarText(
-                  context, "Map provider", getThemeData().backgroundColor),
-              actions: <Widget>[
-                UBWidgetBuilder().buildDropdownButton(context,
-                    _mapProvider.keys.toList(), onMapProviderChanged, Colors.black, 16.0)
-              ],
-            ),
             key: _scaffoldKey,
+            bottomNavigationBar: BottomAppBar(
+                color: getThemeData().accentColor,
+                child: Container(
+                    padding: EdgeInsets.all(8.0),
+                    child: Row(children: <Widget>[
+                      UBWidgetBuilder().buildNormalText(
+                          context, "Using map data from: ", Colors.white),
+                      UBWidgetBuilder().buildDropdownButton(context, _mapProvider.keys.toList(), _onMapProviderChanged, _currentMapProvider, Colors.white, 15.0)
+                    ]))),
             body: Container(
                 decoration: BoxDecoration(
                   color: getThemeData().backgroundColor,
@@ -86,8 +87,8 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
           MarkerLayerOptions(
             markers: [
               Marker(
-                  width: 40.0,
-                  height: 40.0,
+                  width: 30.0,
+                  height: 30.0,
                   point: LatLng(_pos.latitude, _pos.longitude),
                   builder: (ctx) => Container(
                       child: new GestureDetector(
@@ -100,19 +101,16 @@ class MapScreenState extends State<MapScreen> implements PagePresenter {
                                   ")!"),
                             ));
                           },
-                          child: new FlutterLogo(colors: Colors.red)))),
+                          child: new Icon(Icons.location_on,
+                              color: getThemeData().accentColor)))),
             ],
           ),
         ],
-      )),
-      UBWidgetBuilder().buildLabel(
-          context,
-          "Using map data from: " + _currentMapProvider,
-          getThemeData().accentColor)
+      ))
     ]);
   }
 
-  void onMapProviderChanged(newProvider) {
+  void _onMapProviderChanged(newProvider) {
     setState(() {
       _currentMapProvider = newProvider;
     });

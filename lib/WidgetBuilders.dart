@@ -237,9 +237,14 @@ class UBWidgetBuilder {
         ));
   }
 
-  Widget buildDropdownButton(
-      context, List<String> items, onChanged, textColor, fontSize) {
+  Widget buildDropdownButton(context, List<String> items, onChanged,
+      hint, textColor, fontSize) {
     return new DropdownButton<String>(
+        hint: new Text(hint,
+            style: new TextStyle(
+              color: Colors.white,
+              fontSize: fontSize * _getDevicePixelRatio(context),
+            )),
         items: items.map((String value) {
           return new DropdownMenuItem<String>(
             value: value,
@@ -247,7 +252,6 @@ class UBWidgetBuilder {
                 style: new TextStyle(
                   color: textColor,
                   fontSize: fontSize * _getDevicePixelRatio(context),
-                  letterSpacing: 2.0 * _getDevicePixelRatio(context),
                 )),
           );
         }).toList(),
