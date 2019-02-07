@@ -90,11 +90,19 @@ class ChatMessageInteractor {
     _repository = new FirebaseChatMessageRepository();
   }
 
-  void loadMessages(friendName) {
+  Future<String> getFriendId(friendName) async {
     assert(_presenter != null);
+    assert(friendName != null);
+
+    return await _repository.getFriendId(friendName);
+  }
+
+  void loadMessages(friendId) {
+    assert(_presenter != null);
+    assert(friendId != null);
 
     _repository
-        .fetch(friendName)
+        .fetch(friendId)
         .then((messages) => _presenter.onLoadChatMessageComplete(messages))
         .catchError((onError) {
       print(onError);
@@ -102,8 +110,8 @@ class ChatMessageInteractor {
     });
   }
 
-  Future<bool> send(name, message) async {
-    _repository.send(name, message);
+  Future<bool> send(friendId, message) async {
+    _repository.send(friendId, message);
     return true;
   }
 }

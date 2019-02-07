@@ -9,63 +9,19 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 
-class UserAccountManager {
-  static final UserAccountManager _singleton =
-      new UserAccountManager._internal();
+class FirestoreWrapper {
+  static final FirestoreWrapper _singleton = new FirestoreWrapper._internal();
 
-  final _googleSignIn = new GoogleSignIn();
-
-  //final _facebookSignIn = new FacebookLogin();
-  final _firebaseAuth = new FirebaseAuth.fromApp(FirebaseApp.instance);
-  final _firestore = Firestore.instance;
-
-  factory UserAccountManager() {
+  factory FirestoreWrapper() {
     return _singleton;
   }
 
-  UserAccountManager._internal();
+  FirestoreWrapper._internal();
 
-  Future<bool> signInWithEmail(userEmail, userPassword) async {
-    FirebaseUser firebaseUser;
-    try {
-      firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
-          email: userEmail, password: userPassword);
-    } catch (e) {
-      print(e);
-    }
+  final _firestore = Firestore.instance;
 
-    if (firebaseUser == null) {
-      firebaseUser = await _firebaseAuth.createUserWithEmailAndPassword(
-          email: userEmail, password: userPassword);
-      UserUpdateInfo info = new UserUpdateInfo();
-      info.displayName = userEmail;
-      await firebaseUser.updateProfile(info);
-      await firebaseUser.reload();
-      firebaseUser = await _firebaseAuth.currentUser();
-    }
-
-    await validateFirebaseUser(firebaseUser);
-
-    await saveFirebaseUser(firebaseUser);
-
-    return true;
-  }
-
-  Future<bool> signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    final FirebaseUser firebaseUser = await _firebaseAuth.signInWithGoogle(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-
-    await validateFirebaseUser(firebaseUser);
-
-    await saveFirebaseUser(firebaseUser);
-
-    return true;
+  Firestore getFirestoreInstance() {
+    return _firestore;
   }
 
   Future saveFirebaseUser(FirebaseUser firebaseUser) async {
@@ -75,7 +31,9 @@ class UserAccountManager {
           .collection('users')
           .where('id', isEqualTo: firebaseUser.uid)
           .getDocuments();
+
       final List<DocumentSnapshot> documents = result.documents;
+
       if (documents.length == 0) {
         // Update data to server if new user
         _firestore.collection('users').document(firebaseUser.uid).setData(
@@ -98,69 +56,36 @@ class UserAccountManager {
         });
       }
     }
-
-    UserData.fullName = firebaseUser.displayName;
-    UserData.email = firebaseUser.email;
-    UserData._uid = firebaseUser.uid;
-  }
-
-  Future validateFirebaseUser(FirebaseUser firebaseUser) async {
-    assert(firebaseUser.email != null);
-    assert(firebaseUser.displayName != null);
-    assert(!firebaseUser.isAnonymous);
-    assert(await firebaseUser.getIdToken() != null);
-
-    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
-    assert(firebaseUser.uid == currentUser.uid);
-  }
-
-  Future<bool> signInWithFacebook() async {
-//    final facebookSignInResult = await _facebookSignIn
-//        .logInWithReadPermissions(['email', 'public_profile']);
-//    if (facebookSignInResult.status == FacebookLoginStatus.loggedIn) {
-//      final FirebaseUser firebaseUser = await _firebaseAuth.signInWithFacebook(
-//          accessToken: facebookSignInResult.accessToken.token);
-//
-//      await validateFirebaseUser(firebaseUser);
-//
-//      UserData.fullName = firebaseUser.displayName;
-//      UserData.email = firebaseUser.email;
-//    }
-
-    return true;
-  }
-
-  Future<bool> signOut() async {
-    await _firebaseAuth.signOut();
-    await _googleSignIn.disconnect();
-    await _googleSignIn.signOut();
-
-    return true;
   }
 
   Future<List<RecentChatData>> fetchRecentChatData() async {
-    final chatMessageCollection = _firestore
+    final chatMessageQuerySnapshot = await _firestore
         .collection('users')
-        .document(UserData._uid)
-        .collection('chatMessages');
-    final chatMessageQuerySnapshot = await chatMessageCollection.getDocuments();
+        .document(UserData.uid)
+        .collection('chatMessages')
+        .getDocuments();
+
     final List<DocumentSnapshot> documents = chatMessageQuerySnapshot.documents;
+
     List<RecentChatData> result = [];
+
     await Future.forEach(documents, (documentSnapshot) async {
       if (documentSnapshot.documentID != 'initializer') {
         final val = RecentChatData();
         String chatMessageId = documentSnapshot.documentID;
-        final chatMessageContentCollection = _firestore
+        final lastMessage = await _firestore
             .collection('chatMessages')
             .document(chatMessageId)
-            .collection('content');
-        final lastMessage = await chatMessageContentCollection
+            .collection('content')
             .orderBy("timestamp", descending: true)
             .limit(1)
             .getDocuments();
+
         var senderName = await getUserName(lastMessage.documents[0]['sender']);
-        var receiverName = await getUserName(lastMessage.documents[0]['receiver']);
-        val.userName = senderName == UserData.fullName ? receiverName : senderName;
+        var receiverName =
+            await getUserName(lastMessage.documents[0]['receiver']);
+        val.userName =
+            senderName == UserData.fullName ? receiverName : senderName;
         val.lastMessage = await lastMessage.documents[0]['message'];
         result.add(val);
       }
@@ -168,13 +93,9 @@ class UserAccountManager {
     return result;
   }
 
-  Future<List<ChatMessage>> fetchChatMessageData(friendName) async {
-    final friendId = await getUserId(friendName);
-    final chatMessageId = getChatCollectionId(UserData._uid, friendId);
-
-    final chatMessageCollection = _firestore.collection('chatMessages');
-
-    final chatMessageQuerySnapshot = await chatMessageCollection
+  Future<List<ChatMessage>> fetchChatMessageData(chatMessageId) async {
+    final chatMessageQuerySnapshot = await _firestore
+        .collection('chatMessages')
         .document(chatMessageId)
         .collection('content')
         .getDocuments();
@@ -184,9 +105,8 @@ class UserAccountManager {
     List<ChatMessage> result = [];
     await Future.forEach(chatMessageDocuments, (documentSnapshot) async {
       final val = ChatMessage();
-      final senderName = await getUserName(documentSnapshot['sender']);
-      val.fullName = senderName;
-      val.messages = await documentSnapshot['message'];
+      val.isLocalSend = documentSnapshot['sender'] == UserData.uid;
+      val.messages = documentSnapshot['message'];
       result.add(val);
     });
     return result;
@@ -195,7 +115,7 @@ class UserAccountManager {
   Future<List<FriendData>> fetchFriendData() async {
     final userFriendsCollection = _firestore
         .collection('users')
-        .document(UserData._uid)
+        .document(UserData.uid)
         .collection('friends');
     final QuerySnapshot userFriendsQuerySnapshot =
         await userFriendsCollection.getDocuments();
@@ -268,13 +188,13 @@ class UserAccountManager {
     }
   }
 
-  Future addFriend(name) async {
-    var friendId = await getUserId(name);
-    await addFriendToFirestore(UserData._uid, friendId, name);
-    await addFriendToFirestore(friendId, UserData._uid, UserData.fullName);
+  Future addFriend(friendName) async {
+    var friendId = await getUserId(friendName);
+    await addFriendToFirestore(UserData.uid, friendId, friendName);
+    await addFriendToFirestore(friendId, UserData.uid, UserData.fullName);
     final chatMessage = _firestore
         .collection('chatMessages')
-        .document(getChatCollectionId(UserData._uid, friendId));
+        .document(UbUtilities().getChatId(UserData.uid, friendId));
     await chatMessage.setData(
         {'timestamp': DateTime.now().millisecondsSinceEpoch.toString()});
   }
@@ -291,7 +211,7 @@ class UserAccountManager {
           .collection('users')
           .document(userId)
           .collection('chatMessages')
-          .document(getChatCollectionId(userId, friendId));
+          .document(UbUtilities().getChatId(userId, friendId));
       await chatMessage.setData(
           {'timestamp': DateTime.now().millisecondsSinceEpoch.toString()});
       print("User: " + userId + " :New friend added");
@@ -300,13 +220,12 @@ class UserAccountManager {
     }
   }
 
-  Future sendChatMessage(name, message) async {
-    var userId = UserData._uid;
-    var friendId = await getUserId(name);
-    var chatMessageId = getChatCollectionId(userId, friendId);
+  Future sendChatMessage(friendId, message) async {
+    var userId = UserData.uid;
+    var chatId = UbUtilities().getChatId(userId, friendId);
 
     final chatMessageCollection =
-        _firestore.collection('chatMessages').document(chatMessageId);
+        _firestore.collection('chatMessages').document(chatId);
     chatMessageCollection.collection('content').add({
       'sender': userId,
       'receiver': friendId,
@@ -314,15 +233,101 @@ class UserAccountManager {
       'message': message
     });
   }
+}
 
-  getChatCollectionId(String userId, String friendId) {
-    var chatMessageId;
-    if (userId.hashCode <= friendId.hashCode) {
-      chatMessageId = '$userId-$friendId';
-    } else {
-      chatMessageId = '$friendId-$userId';
+class UserAccountManager {
+  static final UserAccountManager _singleton =
+      new UserAccountManager._internal();
+
+  factory UserAccountManager() {
+    return _singleton;
+  }
+
+  UserAccountManager._internal();
+
+  final _googleSignIn = new GoogleSignIn();
+
+  //final _facebookSignIn = new FacebookLogin();
+  final _firebaseAuth = new FirebaseAuth.fromApp(FirebaseApp.instance);
+
+  Future<bool> signInWithEmail(userEmail, userPassword) async {
+    FirebaseUser firebaseUser;
+    try {
+      firebaseUser = await _firebaseAuth.signInWithEmailAndPassword(
+          email: userEmail, password: userPassword);
+    } catch (e) {
+      print(e);
     }
-    return chatMessageId;
+
+    if (firebaseUser == null) {
+      firebaseUser = await _firebaseAuth.createUserWithEmailAndPassword(
+          email: userEmail, password: userPassword);
+      UserUpdateInfo info = new UserUpdateInfo();
+      info.displayName = userEmail;
+      await firebaseUser.updateProfile(info);
+      await firebaseUser.reload();
+      firebaseUser = await _firebaseAuth.currentUser();
+    }
+
+    await postSignIn(firebaseUser);
+
+    return true;
+  }
+
+  Future<bool> signInWithGoogle() async {
+    final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+
+    final FirebaseUser firebaseUser = await _firebaseAuth.signInWithGoogle(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    await postSignIn(firebaseUser);
+
+    return true;
+  }
+
+  Future<bool> signInWithFacebook() async {
+//    final facebookSignInResult = await _facebookSignIn
+//        .logInWithReadPermissions(['email', 'public_profile']);
+//    if (facebookSignInResult.status == FacebookLoginStatus.loggedIn) {
+//      final FirebaseUser firebaseUser = await _firebaseAuth.signInWithFacebook(
+//          accessToken: facebookSignInResult.accessToken.token);
+//
+//    await postSignIn(firebaseUser);
+//    }
+
+    return true;
+  }
+
+  Future postSignIn(FirebaseUser firebaseUser) async {
+    await validateFirebaseUser(firebaseUser);
+
+    await FirestoreWrapper().saveFirebaseUser(firebaseUser);
+
+    UserData.fullName = firebaseUser.displayName;
+    UserData.email = firebaseUser.email;
+    UserData.uid = firebaseUser.uid;
+  }
+
+  Future validateFirebaseUser(FirebaseUser firebaseUser) async {
+    assert(firebaseUser.email != null);
+    assert(firebaseUser.displayName != null);
+    assert(!firebaseUser.isAnonymous);
+    assert(await firebaseUser.getIdToken() != null);
+
+    final FirebaseUser currentUser = await _firebaseAuth.currentUser();
+    assert(firebaseUser.uid == currentUser.uid);
+  }
+
+  Future<bool> signOut() async {
+    await _firebaseAuth.signOut();
+    await _googleSignIn.disconnect();
+    await _googleSignIn.signOut();
+
+    return true;
   }
 }
 
@@ -330,7 +335,7 @@ class UserData {
   static final UserData _singleton = new UserData._internal();
   static String fullName;
   static String email;
-  static String _uid;
+  static String uid;
 
   factory UserData() {
     return _singleton;
@@ -365,17 +370,17 @@ class FetchDataException implements Exception {
 
 class FirebaseFriendRepository implements FriendRepository {
   Future<List<String>> searchFriend(name) async {
-    var result = await UserAccountManager().searchFriend(name);
+    var result = await FirestoreWrapper().searchFriend(name);
     return result;
   }
 
   Future<List<FriendData>> fetch() async {
-    var result = await UserAccountManager().fetchFriendData();
+    var result = await FirestoreWrapper().fetchFriendData();
     return result;
   }
 
-  Future addFriend(name) async {
-    await UserAccountManager().addFriend(name);
+  Future addFriend(friendName) async {
+    await FirestoreWrapper().addFriend(friendName);
   }
 }
 
@@ -392,32 +397,38 @@ abstract class RecentChatRepository {
 
 class FirebaseRecentChatRepository implements RecentChatRepository {
   Future<List<RecentChatData>> fetch() async {
-    var result = await UserAccountManager().fetchRecentChatData();
+    var result = await FirestoreWrapper().fetchRecentChatData();
     return result;
   }
 }
 
 class ChatMessage {
-  String fullName;
+  bool isLocalSend;
   String messages;
 
-  ChatMessage({this.fullName, this.messages});
+  ChatMessage({this.isLocalSend, this.messages});
 }
 
 abstract class ChatMessageRepository {
-  Future<List<ChatMessage>> fetch(friendName);
+  Future<String> getFriendId(friendName);
 
-  Future<bool> send(name, message);
+  Future<List<ChatMessage>> fetch(friendId);
+
+  Future<bool> send(friendId, message);
 }
 
 class FirebaseChatMessageRepository implements ChatMessageRepository {
-  Future<List<ChatMessage>> fetch(friendName) async {
-    var result = await UserAccountManager().fetchChatMessageData(friendName);
-    return result;
+  Future<String> getFriendId(friendName) async {
+    var x = await FirestoreWrapper().getUserId(friendName);
+    return x;
   }
 
-  Future<bool> send(name, message) async {
-    await UserAccountManager().sendChatMessage(name, message);
+  Future<List<ChatMessage>> fetch(friendId) async {
+    return await FirestoreWrapper().fetchChatMessageData(friendId);
+  }
+
+  Future<bool> send(friendId, message) async {
+    await FirestoreWrapper().sendChatMessage(friendId, message);
     return true;
   }
 }
@@ -463,6 +474,12 @@ class UbUtilities {
     result.add(iosInfo.localizedModel);
     result.add(iosInfo.model);
     return result;
+  }
+
+  getChatId(String userId, String friendId) {
+    return userId.hashCode <= friendId.hashCode
+        ? '$userId-$friendId'
+        : '$friendId-$userId';
   }
 
   static final UbUtilities _singleton = new UbUtilities._internal();

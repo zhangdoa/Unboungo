@@ -9,62 +9,71 @@ import 'package:unboungo/Presenter.dart';
 import 'package:unboungo/Theme.dart';
 
 class ChatScreen extends StatefulWidget {
-  final String title;
+  final String friendName;
 
   ChatScreen({
     Key key,
-    this.title,
+    this.friendName,
   }) : super(key: key);
 
   @override
-  State createState() => new ChatScreenState(title);
+  State createState() => new ChatScreenState(friendName);
 }
 
 class ChatScreenState extends State<ChatScreen>
     with TickerProviderStateMixin
     implements ChatMessagePresenter {
-  ChatScreenState(title) {
+  ChatScreenState(friendName) {
     _interactor = new ChatMessageInteractor(this);
-    _title = title;
+    _friendName = friendName;
   }
 
   @override
   void initState() {
     super.initState();
-    _interactor.loadMessages(_title);
+    initStateAsync();
+  }
+
+  void initStateAsync() {
+    _interactor
+        .getFriendId(_friendName)
+        .then((friendId) => setFriendId(friendId));
+  }
+
+  void setFriendId(friendId) {
+    setState(() {
+      _friendId = friendId;
+      _chatId = UbUtilities().getChatId(UserData.uid, friendId);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      child:  Scaffold(
-            appBar: new AppBar(
-              title: new Text(_title),
-              backgroundColor: getThemeData().accentColor,
-              leading: new IconButton(
-                icon: new Icon(Icons.arrow_back),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-            body: new Container(
-              decoration: new BoxDecoration(
-                color: getThemeData().backgroundColor,
-              ),
-              child: new Column(
-                children: <Widget>[
-                  new Flexible(
-                    child: _buildChatMessages(),
-                  ),
-                  new Divider(height: 4.0),
-                  new Container(
-                    decoration:
-                        new BoxDecoration(color: Theme.of(context).cardColor),
-                    child: _buildTextComposer(),
-                  ),
-                ],
-              ),
-            ),
+      child: Scaffold(
+        appBar: new AppBar(
+          title: new Text(_friendName),
+          backgroundColor: getThemeData().accentColor,
+          leading: new IconButton(
+            icon: new Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
           ),
+        ),
+        body: new Container(
+          decoration: new BoxDecoration(
+            color: getThemeData().backgroundColor,
+          ),
+          child: new Column(
+            children: <Widget>[
+              Flexible(
+                child: _buildChatMessages(),
+              ),
+              new Divider(height: 4.0),
+              _buildTextComposer(),
+            ],
+          ),
+        ),
+      ),
       onWillPop: () async => false,
     );
   }
@@ -78,10 +87,7 @@ class ChatScreenState extends State<ChatScreen>
 
   @override
   void onLoadChatMessageComplete(List<ChatMessage> items) {
-    items.forEach((item) {
-      _buildChatMessageWidgets(
-          item.fullName, item.messages, item.fullName == UserData.fullName);
-    });
+    items.forEach((item) {});
   }
 
   @override
@@ -90,60 +96,70 @@ class ChatScreenState extends State<ChatScreen>
   }
 
   Widget _buildChatMessages() {
-    return new ListView.builder(
-      padding: new EdgeInsets.all(8.0),
-      reverse: true,
-      itemBuilder: (_, int index) => _chatMessageWidgets[index],
-      itemCount: _chatMessageWidgets.length,
-    );
+    return StreamBuilder(
+        stream: FirestoreWrapper()
+            .getFirestoreInstance()
+            .collection('chatMessages')
+            .document(_chatId)
+            .collection('content')
+            .orderBy('timestamp', descending: true)
+            .limit(20)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+          var documents = snapshot.data.documents;
+          return ListView.builder(
+            padding: EdgeInsets.all(10.0),
+            reverse: true,
+            itemBuilder: (_, index) {
+              var isLocalSent = documents[index]['sender'] == UserData.uid;
+              return _buildChatMessageWidgets(
+                  isLocalSent ? UserData.fullName : _friendName,
+                  documents[index]['message'],
+                  isLocalSent);
+            },
+            itemCount: documents.length,
+          );
+        });
   }
 
   Widget _buildTextComposer() {
-    return new IconTheme(
-      data: new IconThemeData(color: Theme.of(context).accentColor),
-      child: new Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: new Row(
-          children: <Widget>[
-            new Flexible(
-              child: new TextField(
-                controller: _textController,
-                onChanged: (String text) {
-                  setState(() {
-                    _isComposing = text.length > 0;
-                  });
-                },
-                onSubmitted: _handleSubmitted,
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Do you know who I am?'),
-              ),
+    return new Container(
+        decoration: new BoxDecoration(color: Theme.of(context).cardColor),
+        child: IconTheme(
+          data: new IconThemeData(color: Theme.of(context).accentColor),
+          child: new Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: new Row(
+              children: <Widget>[
+                new Flexible(
+                  child: new TextField(
+                    controller: _textController,
+                    onSubmitted: _handleSubmitted,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Do you know who I am?'),
+                  ),
+                ),
+                new Container(
+                    margin: new EdgeInsets.symmetric(horizontal: 4.0),
+                    child: new IconButton(
+                        icon: new Icon(Icons.send),
+                        onPressed: () =>
+                            _handleSubmitted(_textController.text))),
+              ],
             ),
-            new Container(
-                margin: new EdgeInsets.symmetric(horizontal: 4.0),
-                child: new IconButton(
-                  icon: new Icon(Icons.send),
-                  onPressed: _isComposing
-                      ? () => _handleSubmitted(_textController.text)
-                      : null,
-                )),
-          ],
-        ),
-      ),
-    );
+          ),
+        ));
   }
 
   void _handleSubmitted(String text) {
     _textController.clear();
-    _buildChatMessageWidgets(UserData.fullName, text, true);
-    _sendMessage(_title, text);
-    setState(() {
-      _isComposing = false;
-    });
+    _sendMessage(_friendId, text);
   }
 
-  void _buildChatMessageWidgets(String userName, String text, isLocalUser) {
-    ChatMessageWidget chatMessageWidget = new ChatMessageWidget(
+  Widget _buildChatMessageWidgets(String userName, String text, isLocalUser) {
+    var chatMessageWidget = new ChatMessageWidget(
       userFullName: userName,
       isLocalUser: isLocalUser,
       text: text,
@@ -152,10 +168,11 @@ class ChatScreenState extends State<ChatScreen>
         vsync: this,
       ),
     );
-    setState(() {
-      _chatMessageWidgets.insert(0, chatMessageWidget);
-    });
+
+    _chatMessageWidgets.insert(0, chatMessageWidget);
     chatMessageWidget.animationController.forward();
+
+    return chatMessageWidget;
   }
 
   void _sendMessage(name, message) {
@@ -165,8 +182,9 @@ class ChatScreenState extends State<ChatScreen>
   ChatMessageInteractor _interactor;
   final List<ChatMessageWidget> _chatMessageWidgets = <ChatMessageWidget>[];
   final TextEditingController _textController = new TextEditingController();
-  bool _isComposing = false;
-  String _title;
+  String _friendName;
+  String _friendId;
+  String _chatId;
 }
 
 class ChatMessageWidget extends StatelessWidget {
@@ -210,8 +228,6 @@ class ChatMessageWidget extends StatelessWidget {
       crossAxisAlignment:
           isLocalUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: <Widget>[
-        new Text(userFullName,
-            style: TextStyle(color: Colors.grey, fontSize: 12.0)),
         Container(
           decoration: ShapeDecoration(
             shape: RoundedRectangleBorder(

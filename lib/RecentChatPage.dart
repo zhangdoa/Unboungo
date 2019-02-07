@@ -22,7 +22,6 @@ class RecentChatPageState extends State<RecentChatPage>
   @override
   void initState() {
     super.initState();
-    _isLoading = true;
     _interactor.loadRecentChats();
   }
 
@@ -73,11 +72,11 @@ class RecentChatPageState extends State<RecentChatPage>
   void _onRecentButtonPressed(text) async {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatScreen(title: text)),
+      MaterialPageRoute(builder: (context) => ChatScreen(friendName: text)),
     );
   }
 
   RecentChatInteractor _interactor;
   List<RecentChatData> _recentChatDatas;
-  bool _isLoading;
+  bool _isLoading = true;
 }

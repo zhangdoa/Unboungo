@@ -182,7 +182,7 @@ class FriendPageState extends State<FriendPage> implements FriendDataPresenter {
   void _onFriendButtonPressed(text) async {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => ChatScreen(title: text)),
+      MaterialPageRoute(builder: (context) => ChatScreen(friendName: text)),
     );
   }
 
